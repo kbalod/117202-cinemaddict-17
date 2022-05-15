@@ -1,4 +1,3 @@
-import { generateComments } from '../fish/data.js';
 import {createElement} from '../render.js';
 import { humanizeDueDatePopup } from '../utils.js';
 
@@ -20,7 +19,7 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
     let commentsList = '';
 
     commentsCuryFilm.forEach((data) => {
-      const { id, author, comment, date, emotion } = data;
+      const { author, comment, date, emotion } = data;
 
       commentsList += `<li class="film-details__comment">
               <span class="film-details__comment-emoji">

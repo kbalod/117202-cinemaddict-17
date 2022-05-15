@@ -21,7 +21,7 @@ const createCardFilmTemplate = (films) => {
     <h3 class="film-card__title">${filmsInfo.title}</h3>
     <p class="film-card__rating">${filmsInfo.totalRating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${filmsInfo.release.date}</span>
+      <span class="film-card__year">${release}</span>
       <span class="film-card__duration">${filmsInfo.runtime}</span>
       <span class="film-card__genre">${filmsInfo.genre}</span>
     </p>

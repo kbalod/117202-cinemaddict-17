@@ -24,7 +24,7 @@ const generateDescriptionFilm = () => {
     'Aliquam id orci ut lectus varius viverra',
     'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante'
   ];
-  return description.slice(0,getRandomInteger(1, description.length - 1)).join(".");
+  return description.slice(0,getRandomInteger(1, description.length - 1)).join('.');
 };
 const generateGenresFilm = () => {
   const genres = ['Комедия','Драма','Детектив'];
