@@ -1,14 +1,20 @@
+import { MAX_FILMS } from '../model/films-model.js';
 import {createElement} from '../render.js';
 
-const createShowMoreButtonTemplate = () => (
-  '<button class="films-list__show-more">Show more</button>'
+
+const createFooterTemplate = () => (
+  `
+
+  <section class="footer__statistics">
+    <p>${MAX_FILMS} movies inside</p>
+  </section>
+</footer>`
 );
 
-export default class ShowMoreButtonView {
+export default class FooterView {
   #element = null;
-
   get template() {
-    return createShowMoreButtonTemplate();
+    return createFooterTemplate();
   }
 
   get element() {
