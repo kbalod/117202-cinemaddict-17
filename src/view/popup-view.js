@@ -152,24 +152,28 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
   );};
 
 export default class PopupFilmView {
-  constructor(films,comments) {
-    this.films = films;
-    this.comments = comments;
+  #films = null;
+  #commentsCuryFilm = null;
+  #element = null;
+
+  constructor(films,commentsCuryFilm) {
+    this.#films = films;
+    this.#commentsCuryFilm = commentsCuryFilm;
   }
 
-  getTemplate() {
-    return createPopupFilmTemplate(this.films,this.comments);
+  get template() {
+    return createPopupFilmTemplate(this.#films,this.#commentsCuryFilm);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

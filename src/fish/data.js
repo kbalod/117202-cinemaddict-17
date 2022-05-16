@@ -78,9 +78,9 @@ export const generateComments = (data) => {
 
 const generateCommentsArray = () => Array.from({length: getRandomInteger(0,5)},()=> getRandomInteger(1,1000));
 
-
-export const generateFilmsCard = (id) =>({
-  id,
+let count = 1;
+export const generateFilmsCard = () =>({
+  id: count++,
   comments: generateCommentsArray(),
   filmsInfo:{
     title: generateTitleFilm(),

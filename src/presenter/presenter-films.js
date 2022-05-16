@@ -12,25 +12,31 @@ const siteFooterElement = document.querySelector('.footer');
 const MAX_COUNT_STEP_FILMS = 5;
 
 export default class FilmsPresenter {
-  filmsContainer = new FilmContainerView();
-  filmListComponent = new FilmListView();
-  filmListContainerComponent = new FilmListContainerView();
+  #filmContainer = null;
+  #filmsModel = null;
+
+  #filmsContainer = new FilmContainerView();
+  #filmListComponent = new FilmListView();
+  #filmListContainerComponent = new FilmListContainerView();
+
+  #films = [];
 
   init = (filmContainer, filmsModel) => {
-    this.filmContainer = filmContainer;
-    this.filmsModel = filmsModel;
-    this.films = [...this.filmsModel.getFilms()];
+    this.#filmContainer = filmContainer;
+    this.#filmsModel = filmsModel;
+    this.#films = [...this.#filmsModel.films];
 
-    render(this.filmsContainer, this.filmContainer);
-    render(this.filmListComponent, this.filmsContainer.getElement());
-    render(this.filmListContainerComponent, this.filmListComponent.getElement());
+    render(this.#filmsContainer, this.#filmContainer);
+    render(this.#filmListComponent, this.#filmsContainer.element);
+    render(this.#filmListContainerComponent, this.#filmListComponent.element);
     for (let i = 0; i < MAX_COUNT_STEP_FILMS; i++) {
-      render(new CardFilmView(this.films[i]), this.filmListContainerComponent.getElement());
+      const card = new CardFilmView(this.#films[i]);
+      render(card, this.#filmListContainerComponent.element);
+      card.element.addEventListener('click', () => alert(this.#films[i].id));
     }
 
-    render(new ShowMoreButtonView(), this.filmListComponent.getElement());
-
-    render(new PopupFilmView(this.films[0],generateComments(this.films[0].comments)), siteFooterElement);
+    render(new ShowMoreButtonView(), this.#filmListComponent.element);
+    //render(new PopupFilmView(this.#films[0],generateComments(this.#films[0].comments)), siteFooterElement);
   };
 }
 

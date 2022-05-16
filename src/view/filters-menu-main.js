@@ -10,16 +10,17 @@ const createMainFilterTemplate = () => (
 );
 
 export default class MainFilterView {
-  getTemplate() {
+  #element = null;
+  get template() {
     return createMainFilterTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
