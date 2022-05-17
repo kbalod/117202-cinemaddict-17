@@ -34,7 +34,10 @@ export default class FilmsPresenter {
     const onFilmCardClick = (films,comments) => {
       const filmComponent = new PopupFilmView(films,comments);
       document.querySelector('body').classList.add('hide-overflow');
-      const removePopup = () => siteFooterElement.removeChild(siteFooterElement.querySelector('.film-details'));
+      const removePopup = () => {
+        siteFooterElement.removeChild(siteFooterElement.querySelector('.film-details'));
+        document.querySelector('body').classList.remove('hide-overflow');
+      };
 
       if (document.querySelector('.film-details')) {
         removePopup();
@@ -62,7 +65,6 @@ export default class FilmsPresenter {
       const card = new CardFilmView(this.#films[i]);
       render(card, this.#filmListContainerComponent.element);
       card.element.addEventListener('click', () => onFilmCardClick(this.#films[i],generateComments(this.#films[i].comments)));
-      console.log(this.#films[i].comments);
     }
 
     render(new ShowMoreButtonView(), this.#filmListComponent.element);
