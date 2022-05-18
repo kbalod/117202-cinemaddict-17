@@ -10,6 +10,8 @@ import FooterView from './view/footer.js';
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const siteFooterElement = document.querySelector('.footer');
+
+
 const filmsModel = new FilmsModel();
 
 
@@ -17,6 +19,6 @@ render(new MainFilterView(), siteMainElement);
 render(new SortFilterView(), siteMainElement);
 render(new RankUserView(), siteHeaderElement);
 render(new FooterView(),siteFooterElement);
+
 const filmsPresenter = new FilmsPresenter();
 filmsPresenter.init(siteMainElement,filmsModel);
-
