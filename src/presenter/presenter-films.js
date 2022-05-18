@@ -6,6 +6,7 @@ import CardFilmView from '../view/card-film.js';
 import PopupFilmView from '../view/popup-view.js';
 import {render} from '../render.js';
 import { generateComments } from '../fish/data.js';
+import EmptyFilmsView from '../view/epty-films.js';
 
 const siteFooterElement = document.querySelector('.footer');
 
@@ -30,15 +31,13 @@ export default class FilmsPresenter {
     render(this.#filmsContainer, this.#filmContainer);
     render(this.#filmListComponent, this.#filmsContainer.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
-
-    for (let i = 0; i < Math.min(this.#films.length,FILM_COUNT_PER_STEP); i++) {
-      const card = new CardFilmView(this.#films[i]);
-      render(card, this.#filmListContainerComponent.element);
-      console.log(card.element);
-      card.element.addEventListener('click', () => this.#onFilmCardClick(this.#films[i],generateComments(this.#films[i].comments)));
+    if(this.#films.length === 0){
+      render(new EmptyFilmsView(),this.#filmListContainerComponent.element);
+    }else{
+      for (let i = 0; i < Math.min(this.#films.length,FILM_COUNT_PER_STEP); i++) {
+        this.#renderFilmCard(this.#films[i]);
+      }
     }
-
-
     if (this.#films.length > FILM_COUNT_PER_STEP) {
       render(this.#loadMoreButtonComponent, this.#filmListComponent.element);
 
@@ -46,6 +45,12 @@ export default class FilmsPresenter {
     }
 
   };
+
+  #renderFilmCard (film) {
+    const card = new CardFilmView(film);
+    render(card, this.#filmListContainerComponent.element);
+    card.element.addEventListener('click', () => this.#onFilmCardClick(film, generateComments(film.comments)));
+  }
 
   #onFilmCardClick = (films,comments) => {
     const filmComponent = new PopupFilmView(films,comments);
@@ -78,14 +83,11 @@ export default class FilmsPresenter {
   };
 
   #handleLoadMoreButtonClick = (evt) => {
-    //const cardMore = new CardFilmView();
     evt.preventDefault();
     this.#films
       .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
       .forEach((films) => {
-        const cardMore = new CardFilmView(films);
-        render(new CardFilmView(films),this.#filmListContainerComponent.element);
-        cardMore.element.addEventListener('click', () => this.#onFilmCardClick(this.#films,generateComments(this.#films.comments)));
+        this.#renderFilmCard(films);
       });
 
     this.#renderedFilmCount += FILM_COUNT_PER_STEP;
@@ -97,8 +99,6 @@ export default class FilmsPresenter {
 
   };
 
-
-  //render(new ShowMoreButtonView(), this.#filmListComponent.element);
 }
 
 
