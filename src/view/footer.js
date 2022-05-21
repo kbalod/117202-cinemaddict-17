@@ -1,5 +1,5 @@
 import { MAX_FILMS } from '../model/films-model.js';
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 
 const createFooterTemplate = () => (
@@ -11,21 +11,8 @@ const createFooterTemplate = () => (
 </footer>`
 );
 
-export default class FooterView {
-  #element = null;
+export default class FooterView extends AbstractView {
   get template() {
     return createFooterTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

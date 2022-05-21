@@ -1,4 +1,5 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 const CUT_HREF = 23;
 const variableText = {
   all: 'movies in our database',
@@ -21,21 +22,8 @@ const createEmptyFilmsTemplate = () => {
   return(`<h2 class="films-list__title">There are no ${checkVariableText}</h2>`);
 };
 
-export default class EmptyFilmsView {
-  #element = null;
+export default class EmptyFilmsView extends AbstractView {
   get template() {
     return createEmptyFilmsTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDueDatePopup } from '../utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
@@ -151,12 +151,12 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
 </section>`
   );};
 
-export default class PopupFilmView {
+export default class PopupFilmView extends AbstractView {
   #films = null;
   #commentsCuryFilm = null;
-  #element = null;
 
   constructor(films,commentsCuryFilm) {
+    super();
     this.#films = films;
     this.#commentsCuryFilm = commentsCuryFilm;
   }
@@ -165,15 +165,13 @@ export default class PopupFilmView {
     return createPopupFilmTemplate(this.#films,this.#commentsCuryFilm);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }
