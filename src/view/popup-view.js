@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDueDatePopup } from '../utils.js';
+import { humanizeDueDatePopup } from '../utils/utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
   const {filmsInfo} = films;

@@ -5,6 +5,7 @@ import FilmsPresenter from './presenter/presenter-films.js';
 import FilmsModel from './model/films-model.js';
 import {render} from './render.js';
 import FooterView from './view/footer.js';
+import { generateFilter } from './fish/filter.js';
 
 
 const siteMainElement = document.querySelector('.main');
@@ -13,12 +14,14 @@ const siteFooterElement = document.querySelector('.footer');
 
 
 const filmsModel = new FilmsModel();
-
-
-render(new MainFilterView(), siteMainElement);
+const filters = generateFilter(filmsModel.films);
+console.log(filters);
+render(new MainFilterView(filters), siteMainElement);
 render(new SortFilterView(), siteMainElement);
 render(new RankUserView(), siteHeaderElement);
 render(new FooterView(),siteFooterElement);
 
 const filmsPresenter = new FilmsPresenter();
 filmsPresenter.init(siteMainElement,filmsModel);
+
+
