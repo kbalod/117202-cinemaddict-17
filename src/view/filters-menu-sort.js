@@ -9,7 +9,24 @@ const createSortFilterTemplate = () => (
 );
 
 export default class SortFilterView extends AbstractView {
-  get template() {
-    return createSortFilterTemplate();
+  #filters = null;
+
+  constructor(filters) {
+    super();
+    this.#filters = filters;
   }
+
+  get template() {
+    return createSortFilterTemplate(this.#filters);
+  }
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

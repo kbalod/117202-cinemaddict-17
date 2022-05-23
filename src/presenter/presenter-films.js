@@ -79,6 +79,8 @@ export default class FilmsPresenter {
       document.removeEventListener('keydown', onEscKeyDown);
     });
     document.addEventListener('keydown', onEscKeyDown);
+
+    
   };
 
   #handleLoadMoreButtonClick = () => {

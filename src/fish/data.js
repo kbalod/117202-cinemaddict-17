@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger,formatMinutesHour} from '../utils.js';
+import {getRandomInteger,formatMinutesHour} from '../utils/utils.js';
 
 const generateTitleFilm = () => {
   const title = ['Ирония судьбы','Иван Васильевич меняет профессию','Приключения Шурика'];
