@@ -170,8 +170,38 @@ export default class PopupFilmView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
   };
 
+  setClickButtonHandler = (callback) => {
+    this._callback.clickButton = callback;
+    this.element.querySelector('.film-details__controls').addEventListener('click', this.#clickHandlerButton);
+  };
+
+  setWatchListClickHandler = (callback) => {
+    this._callback.watchListClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchListClickHandler);
+  };
+
+//  setArchiveClickHandler = (callback) => {
+//    this._callback.archiveClick = callback;
+//    this.element.querySelector('.card__btn--archive').addEventListener('click', this.#archiveClickHandler);
+//  };
+
+//  setArchiveClickHandler = (callback) => {
+//    this._callback.archiveClick = callback;
+//    this.element.querySelector('.card__btn--archive').addEventListener('click', this.#archiveClickHandler);
+//  };
   #clickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
+  };
+
+  #clickHandlerButton = (evt) => {
+    evt.preventDefault();
+    this._callback.clickButton();
+    evt.target.classList.toggle('film-details__control-button--active');
+  };
+
+  #watchListClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchListClick();
   };
 }
