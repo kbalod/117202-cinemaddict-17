@@ -21,6 +21,7 @@ export default class FilmCardPresenter {
 
     this.#filmCard = new CardFilmView(film);
 
+    this.#filmCard.setClickButtonHandler(this.#handleWatchListClick);
 
     if (prevFilmComponent === null) {
       render(this.#filmCard,this.#filmListContainerComponent);
@@ -30,7 +31,6 @@ export default class FilmCardPresenter {
 
     remove(prevFilmComponent);
   };
-
 
   destroy = () => {
     remove(this.#filmCard);
