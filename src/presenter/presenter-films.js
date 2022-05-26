@@ -4,7 +4,7 @@ import FilmListContainerView from '../view/films-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import {render, RenderPosition,remove} from '../framework/render.js';
 import EmptyFilmsView from '../view/empty.js';
-import CardFilmPresenter from './card-film.js';
+import FilmCardPresenter from './card-film.js';
 import {updateItem} from '../utils/utils.js';
 
 const FILM_COUNT_PER_STEP = 5;
@@ -12,14 +12,13 @@ const FILM_COUNT_PER_STEP = 5;
 export default class FilmsPresenter {
   #filmContainer = null;
   #filmsModel = null;
-
   #filmsContainer = new FilmContainerView();
   #filmListComponent = new FilmListView();
   #filmListContainerComponent = new FilmListContainerView();
   #loadMoreButtonComponent = new ShowMoreButtonView();
   #emptyFilmsView = new EmptyFilmsView();
   #films = [];
-  #cardFilmPresenter = new Map();
+  #filmCardPresenter = new Map();
   #renderedFilmCount = FILM_COUNT_PER_STEP;
 
   init = (filmContainer,filmsModel) => {
@@ -45,9 +44,9 @@ export default class FilmsPresenter {
   };
 
   #renderFilmCard (film) {
-    const cardFilmPresenter = new CardFilmPresenter(this.#filmListContainerComponent.element,this.#handleTaskChange);
-    cardFilmPresenter.init(film);
-    this.#cardFilmPresenter.set(film.id, cardFilmPresenter);
+    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleTaskChange);
+    filmCardPresenter.init(film);
+    this.#filmCardPresenter.set(film.id, filmCardPresenter);
   }
 
   #renderFilms = (from, to) => {
@@ -63,9 +62,9 @@ export default class FilmsPresenter {
   };
 
   #clearTaskList = () => {
-    this.#cardFilmPresenter.forEach((presenter) => presenter.destroy());
-    this.#cardFilmPresenter.clear();
-    this.#cardFilmPresenter = FILM_COUNT_PER_STEP;
+    this.#filmCardPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmCardPresenter.clear();
+    this.#filmCardPresenter = FILM_COUNT_PER_STEP;
     remove(this.#loadMoreButtonComponent);
   };
 
@@ -89,7 +88,7 @@ export default class FilmsPresenter {
 
   #handleTaskChange = (updatedTask) => {
     this.#films = updateItem(this.#films, updatedTask);
-    this.#cardFilmPresenter.get(updatedTask.id).init(updatedTask);
+    this.#filmCardPresenter.get(updatedTask.id).init(updatedTask);
   };
 }
 

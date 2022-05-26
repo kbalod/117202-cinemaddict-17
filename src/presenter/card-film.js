@@ -1,7 +1,7 @@
 import PopupFilmView from '../view/popup-view.js';
 import CardFilmView from '../view/card-film.js';
 import { generateComments } from '../fish/data.js';
-import {render,remove,destroy} from '../framework/render.js';
+import {render,remove, replace} from '../framework/render.js';
 
 const siteFooterElement = document.querySelector('.footer');
 
@@ -21,15 +21,18 @@ export default class FilmCardPresenter {
 
     this.#filmCard = new CardFilmView(film);
 
-    this.#filmCard.setClickButtonHandler(this.#handleWatchListClick);
+    this.#filmCard.setClickButtonWatchListHandler(this.#handleWatchListClick);
+    this.#filmCard.setClickButtonWatchedHandler(this.#handleAlreadyWatchedClick);
+    this.#filmCard.setClickButtonFavoriteHandler(this.#handleFavoriteClick);
 
     if (prevFilmComponent === null) {
       render(this.#filmCard,this.#filmListContainerComponent);
       this.#filmCard.setClickHandler(() => this.#onFilmCardClick(film, generateComments(film.comments)));
       return;
     }
+    replace(this.#filmCard, prevFilmComponent);
+    this.#filmCard.setClickHandler(() => this.#onFilmCardClick(film, generateComments(film.comments)));
 
-    remove(prevFilmComponent);
   };
 
   destroy = () => {
@@ -37,20 +40,55 @@ export default class FilmCardPresenter {
   };
 
   #handleWatchListClick = () => {
-    this.#changeData({...this.#film, isWatchList: !this.#film.isWatchList});
+    const copyFilm = {...this.#film};
+    const watchListCopy = copyFilm.filmsInfo.userDetails.watchList;
+
+    if(watchListCopy !== false){
+      copyFilm.filmsInfo.userDetails.watchList = false;
+    }else{
+      copyFilm.filmsInfo.userDetails.watchList = true;
+    }
+
+    this.#changeData({...this.#film},watchListCopy);
+  };
+
+  #handleFavoriteClick = () => {
+    const copyFilm = {...this.#film};
+    const favoriteCopy = copyFilm.filmsInfo.userDetails.favorite;
+
+    if(favoriteCopy !== false){
+      copyFilm.filmsInfo.userDetails.favorite = false;
+    }else{
+      copyFilm.filmsInfo.userDetails.favorite = true;
+    }
+
+    this.#changeData({...this.#film},favoriteCopy);
+  };
+
+  #handleAlreadyWatchedClick = () => {
+    const copyFilm = {...this.#film};
+    const alreadyWatchedCopy = copyFilm.filmsInfo.userDetails.alreadyWatched;
+
+    if(alreadyWatchedCopy !== false){
+      copyFilm.filmsInfo.userDetails.alreadyWatched = false;
+    }else{
+      copyFilm.filmsInfo.userDetails.alreadyWatched = true;
+    }
+
+    this.#changeData({...this.#film},alreadyWatchedCopy);
   };
 
   #onFilmCardClick = (films,comments) => {
     const filmComponent = new PopupFilmView(films,comments);
+
     document.querySelector('body').classList.add('hide-overflow');
+
     const removePopup = () => {
       siteFooterElement.removeChild(siteFooterElement.querySelector('.film-details'));
-      document.querySelector('body').classList.remove('hide-overflow');
     };
 
     if (document.querySelector('.film-details')) {
       removePopup();
-
     }
     render(filmComponent,siteFooterElement);
 
@@ -68,8 +106,9 @@ export default class FilmCardPresenter {
     });
 
     document.addEventListener('keydown', onEscKeyDown);
-    filmComponent.setWatchListClickHandler(this.#handleWatchListClick);
-    filmComponent.setClickButtonHandler(()=>console.log('клик'));
 
+    filmComponent.setClickButtonWatchListHandlerPopup(this.#handleWatchListClick);
+    filmComponent.setClickButtonWatchedHandlerPopup(this.#handleAlreadyWatchedClick);
+    filmComponent.setClickButtonFavoriteHandlerPopup(this.#handleFavoriteClick);
   };
 }
