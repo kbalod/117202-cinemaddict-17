@@ -15,9 +15,8 @@ const siteFooterElement = document.querySelector('.footer');
 
 const filmsModel = new FilmsModel();
 const filters = generateFilter(filmsModel.films);
-console.log(filters);
+//console.log(filters);
 render(new MainFilterView(filters), siteMainElement);
-render(new SortFilterView(), siteMainElement);
 render(new RankUserView(), siteHeaderElement);
 render(new FooterView(),siteFooterElement);
 

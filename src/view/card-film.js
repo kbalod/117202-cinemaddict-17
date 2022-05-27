@@ -2,15 +2,15 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDueDateFilmCard } from '../utils/utils.js';
 
 const createCardFilmTemplate = (films) => {
-  const {filmsInfo,comments} = films;
+  const {filmsInfo,comments,userDetails} = films;
   const activeIcon = 'film-card__controls-item--active';
-  const checkWatchList = filmsInfo.userDetails.watchList === true
+  const checkWatchList = userDetails.watchList === true
     ? activeIcon
     : '';
-  const checkAlreadyWatched = filmsInfo.userDetails.alreadyWatched === true
+  const checkAlreadyWatched = userDetails.alreadyWatched === true
     ? activeIcon
     : '';
-  const checkFavorite = filmsInfo.userDetails.favorite === true
+  const checkFavorite = userDetails.favorite === true
     ? activeIcon
     : '';
   const release = humanizeDueDateFilmCard(filmsInfo.release.date);

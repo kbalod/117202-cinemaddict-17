@@ -2,17 +2,17 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDueDatePopup } from '../utils/utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
-  const {filmsInfo} = films;
+  const {filmsInfo,userDetails} = films;
   const release = humanizeDueDatePopup(filmsInfo.release.date);
   const genresNaming = filmsInfo.genre.length > 1 ? 'Genres' : 'Genre';
   const activeIconButton = 'film-details__control-button--active';
-  const checkWatchList = filmsInfo.userDetails.watchList === true
+  const checkWatchList = userDetails.watchList === true
     ? activeIconButton
     : '';
-  const checkAlreadyWatched = filmsInfo.userDetails.alreadyWatched === true
+  const checkAlreadyWatched = userDetails.alreadyWatched === true
     ? activeIconButton
     : '';
-  const checkFavorite = filmsInfo.userDetails.favorite === true
+  const checkFavorite = userDetails.favorite === true
     ? activeIconButton
     : '';
   const addComments = () => {

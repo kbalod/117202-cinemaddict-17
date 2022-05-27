@@ -38,4 +38,24 @@ const updateItem = (items, update) => {
   ];
 };
 
-export {getRandomInteger,humanizeDueDateComment,formatMinutesHour,humanizeDueDatePopup,humanizeDueDateFilmCard,updateItem};
+const more = (a, b) => {
+  if (a < b) {
+    return 1;
+  }
+  return -1;
+};
+
+const sortByRating = (taskA, taskB) => {
+  console.log(taskA.filmsInfo.totalRating);
+  const a = taskA.filmsInfo.totalRating;
+  const b = taskB.filmsInfo.totalRating;
+  return more(a,b);
+};
+const sortByDate = (taskA, taskB) => {
+  console.log(taskA.filmsInfo.release);
+  const a = taskA.filmsInfo.release.date;
+  const b = taskB.filmsInfo.release.date;
+  return dayjs(b).diff(dayjs(a));
+};
+
+export {getRandomInteger,humanizeDueDateComment,formatMinutesHour,humanizeDueDatePopup,humanizeDueDateFilmCard,updateItem,sortByDate,sortByRating};

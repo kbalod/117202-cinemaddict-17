@@ -35,47 +35,60 @@ export default class FilmCardPresenter {
 
   };
 
+  resetView = () => {
+    console.log(1);
+  };
+
   destroy = () => {
     remove(this.#filmCard);
   };
 
   #handleWatchListClick = () => {
-    const copyFilm = {...this.#film};
-    const watchListCopy = copyFilm.filmsInfo.userDetails.watchList;
-
-    if(watchListCopy !== false){
-      copyFilm.filmsInfo.userDetails.watchList = false;
-    }else{
-      copyFilm.filmsInfo.userDetails.watchList = true;
-    }
-
-    this.#changeData({...this.#film},watchListCopy);
+    this.#changeData(Object.assign(
+      {},
+      this.#film,
+      {
+        userDetails:
+        {
+          watchList: !this.#film.userDetails.watchList,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          favorite: this.#film.userDetails.favorite,
+          watchingDate: this.#film.userDetails.watchingDate
+        },
+      },
+    ));
   };
 
   #handleFavoriteClick = () => {
-    const copyFilm = {...this.#film};
-    const favoriteCopy = copyFilm.filmsInfo.userDetails.favorite;
-
-    if(favoriteCopy !== false){
-      copyFilm.filmsInfo.userDetails.favorite = false;
-    }else{
-      copyFilm.filmsInfo.userDetails.favorite = true;
-    }
-
-    this.#changeData({...this.#film},favoriteCopy);
+    this.#changeData(Object.assign(
+      {},
+      this.#film,
+      {
+        userDetails:
+        {
+          watchList: this.#film.userDetails.watchList,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          favorite: !this.#film.userDetails.favorite,
+          watchingDate: this.#film.userDetails.watchingDate
+        },
+      },
+    ));
   };
 
   #handleAlreadyWatchedClick = () => {
-    const copyFilm = {...this.#film};
-    const alreadyWatchedCopy = copyFilm.filmsInfo.userDetails.alreadyWatched;
-
-    if(alreadyWatchedCopy !== false){
-      copyFilm.filmsInfo.userDetails.alreadyWatched = false;
-    }else{
-      copyFilm.filmsInfo.userDetails.alreadyWatched = true;
-    }
-
-    this.#changeData({...this.#film},alreadyWatchedCopy);
+    this.#changeData(Object.assign(
+      {},
+      this.#film,
+      {
+        userDetails:
+        {
+          watchList: this.#film.userDetails.watchList,
+          alreadyWatched: !this.#film.userDetails.alreadyWatched,
+          favorite: this.#film.userDetails.favorite,
+          watchingDate: this.#film.userDetails.watchingDate
+        },
+      },
+    ));
   };
 
   #onFilmCardClick = (films,comments) => {
@@ -85,6 +98,7 @@ export default class FilmCardPresenter {
 
     const removePopup = () => {
       siteFooterElement.removeChild(siteFooterElement.querySelector('.film-details'));
+      document.querySelector('body').classList.remove('hide-overflow');
     };
 
     if (document.querySelector('.film-details')) {
@@ -111,4 +125,5 @@ export default class FilmCardPresenter {
     filmComponent.setClickButtonWatchedHandlerPopup(this.#handleAlreadyWatchedClick);
     filmComponent.setClickButtonFavoriteHandlerPopup(this.#handleFavoriteClick);
   };
+
 }

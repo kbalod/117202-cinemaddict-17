@@ -5,7 +5,11 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 import {render, RenderPosition,remove} from '../framework/render.js';
 import EmptyFilmsView from '../view/empty.js';
 import FilmCardPresenter from './card-film.js';
-import {updateItem} from '../utils/utils.js';
+import {updateItem,sortByDate,sortByRating} from '../utils/utils.js';
+import MainFilterView from '../view/filters-menu-main.js';
+import SortFilterView from '../view/filters-menu-sort.js';
+import { SortType } from '../const.js';
+import { nanoid } from 'nanoid';
 
 const FILM_COUNT_PER_STEP = 5;
 
@@ -20,17 +24,25 @@ export default class FilmsPresenter {
   #films = [];
   #filmCardPresenter = new Map();
   #renderedFilmCount = FILM_COUNT_PER_STEP;
+  #sortMainComponent = new MainFilterView();
+  #sortComponent = new SortFilterView();
+  #sourcedFilms = [];
+  #currentSortType = SortType.DEFAULT;
 
   init = (filmContainer,filmsModel) => {
     this.#filmContainer = filmContainer;
     this.#filmsModel = filmsModel;
     this.#films = [...this.#filmsModel.films];
-
+    this.#sourcedFilms = [...this.#filmsModel.films];
     render(this.#filmsContainer, this.#filmContainer);
     render(this.#filmListComponent, this.#filmsContainer.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
-
     this.#renderFilmsContainer();
+
+  };
+
+  #handleModeChange = () => {
+    this.#filmCardPresenter.forEach((presenter) => presenter.resetView());
   };
 
   #renderLoadMoreButton = () => {
@@ -43,9 +55,17 @@ export default class FilmsPresenter {
     render(this.#emptyFilmsView,this.#filmListContainerComponent.element, RenderPosition.AFTERBEGIN);
   };
 
+  #handleOpenPopup = () =>{
+    if (document.body.querySelector('.film-details')) {
+      document.body.querySelector('.film-details').remove();
+      document.querySelector('body').classList.remove('hide-overflow');
+    }
+  };
+
   #renderFilmCard (film) {
-    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleTaskChange);
+    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleFilmChange,this.#handleOpenPopup);
     filmCardPresenter.init(film);
+    console.log(film);
     this.#filmCardPresenter.set(film.id, filmCardPresenter);
   }
 
@@ -61,7 +81,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #clearTaskList = () => {
+  #clearFilmList = () => {
     this.#filmCardPresenter.forEach((presenter) => presenter.destroy());
     this.#filmCardPresenter.clear();
     this.#filmCardPresenter = FILM_COUNT_PER_STEP;
@@ -83,13 +103,49 @@ export default class FilmsPresenter {
       this.#renderNoFilms();
       return;
     }
+    this.#renderSort();
+    this.#renderFilmList();
+
+  };
+
+  #handleFilmChange = (updatedTask) => {
+    this.#films = updateItem(this.#films, updatedTask);
+    this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedTask);
+    this.#filmCardPresenter.get(updatedTask.id).init(updatedTask);
+  };
+
+  #sortFilms = (sortType) => {
+    switch (sortType) {
+      case SortType.SORT_BY_DATE:
+        this.#films.sort(sortByDate);
+        break;
+      case SortType.SORT_BY_RATING:
+        this.#films.sort(sortByRating);
+        break;
+      default:
+        this.#films = [...this.#sourcedFilms];
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    //render(new SortFilterView(), this.#filmListComponent.element);
+    //render(new MainFilterView(), this.#filmListComponent.element);
+    this.#sortFilms(sortType);
+    this.#clearFilmList();
     this.#renderFilmList();
   };
 
-  #handleTaskChange = (updatedTask) => {
-    this.#films = updateItem(this.#films, updatedTask);
-    this.#filmCardPresenter.get(updatedTask.id).init(updatedTask);
+  #renderSort = () => {
+    render(this.#sortComponent, this.#filmListComponent.element, RenderPosition.AFTERBEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
+
 }
 
 
