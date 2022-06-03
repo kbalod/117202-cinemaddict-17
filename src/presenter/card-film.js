@@ -36,9 +36,6 @@ export default class FilmCardPresenter {
 
   };
 
-  resetView = () => {
-  };
-
   destroy = () => {
     remove(this.#filmCard);
   };
