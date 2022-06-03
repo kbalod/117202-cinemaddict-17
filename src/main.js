@@ -1,5 +1,4 @@
 import MainFilterView from './view/filters-menu-main.js';
-import SortFilterView from './view/filters-menu-sort.js';
 import RankUserView from './view/rank-user.js';
 import FilmsPresenter from './presenter/presenter-films.js';
 import FilmsModel from './model/films-model.js';
@@ -15,7 +14,7 @@ const siteFooterElement = document.querySelector('.footer');
 
 const filmsModel = new FilmsModel();
 const filters = generateFilter(filmsModel.films);
-//console.log(filters);
+
 render(new MainFilterView(filters), siteMainElement);
 render(new RankUserView(), siteHeaderElement);
 render(new FooterView(),siteFooterElement);

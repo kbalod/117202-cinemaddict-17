@@ -68,6 +68,11 @@ export default class CardFilmView extends AbstractView {
     this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#clickHandlerButtonFavorite);
   };
 
+  setSortByDateClickHandler = (callback) => {
+    this._callback.ByDateClick = callback;
+    this.element.querySelector('data-sort-type-sort-by-date').addEventListener('click', this.#sortByDateClickHandler);
+  };
+
   #clickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
@@ -93,4 +98,10 @@ export default class CardFilmView extends AbstractView {
     this._callback.clickButtonFavorite();
     evt.target.classList.toggle('film-card__controls-item--active');
   };
+
+  #sortByDateClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.ByDateClick();
+  };
+
 }

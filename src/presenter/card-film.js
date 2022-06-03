@@ -3,6 +3,7 @@ import CardFilmView from '../view/card-film.js';
 import { generateComments } from '../fish/data.js';
 import {render,remove, replace} from '../framework/render.js';
 
+
 const siteFooterElement = document.querySelector('.footer');
 
 export default class FilmCardPresenter {
@@ -13,12 +14,12 @@ export default class FilmCardPresenter {
   constructor(filmListContainerComponent, changeData) {
     this.#filmListContainerComponent = filmListContainerComponent;
     this.#changeData = changeData;
+
   }
 
   init = (film) => {
     this.#film = film;
     const prevFilmComponent = this.#filmCard;
-
     this.#filmCard = new CardFilmView(film);
 
     this.#filmCard.setClickButtonWatchListHandler(this.#handleWatchListClick);
@@ -36,7 +37,6 @@ export default class FilmCardPresenter {
   };
 
   resetView = () => {
-    console.log(1);
   };
 
   destroy = () => {

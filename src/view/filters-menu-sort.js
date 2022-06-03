@@ -3,9 +3,9 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 const createSortFilterTemplate = () => (
   `<ul class="sort">
-  <li><a href="#" class="sort__button data-sort-type-${SortType.DEFAULT} sort__button--active">Sort by default</a></li>
-  <li><a href="#" class="sort__button data-sort-type-${SortType.SORT_BY_DATE}">Sort by date</a></li>
-  <li><a href="#" class="sort__button data-sort-type-${SortType.SORT_BY_RATING}">Sort by rating</a></li>
+  <li><a href="#" class ="sort__button" data-sort-type="${SortType.DEFAULT}" sort__button--active">Sort by default</a></li>
+  <li><a href="#" class ="sort__button" data-sort-type="${SortType.SORT_BY_DATE}">Sort by date</a></li>
+  <li><a href="#" class ="sort__button" data-sort-type="${SortType.SORT_BY_RATING}">Sort by rating</a></li>
 </ul>`
 );
 
@@ -27,13 +27,10 @@ export default class SortFilterView extends AbstractView {
   };
 
   #sortTypeChangeHandler = (evt) => {
-    console.log(evt.target);
     if (evt.target.tagName !== 'A') {
       return;
     }
-
     evt.preventDefault();
-    console.log(evt.target.dataset.sortType);
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   };
 }

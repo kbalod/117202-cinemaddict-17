@@ -46,13 +46,11 @@ const more = (a, b) => {
 };
 
 const sortByRating = (taskA, taskB) => {
-  console.log(taskA.filmsInfo.totalRating);
   const a = taskA.filmsInfo.totalRating;
   const b = taskB.filmsInfo.totalRating;
   return more(a,b);
 };
 const sortByDate = (taskA, taskB) => {
-  console.log(taskA.filmsInfo.release);
   const a = taskA.filmsInfo.release.date;
   const b = taskB.filmsInfo.release.date;
   return dayjs(b).diff(dayjs(a));

@@ -9,7 +9,7 @@ import {updateItem,sortByDate,sortByRating} from '../utils/utils.js';
 import MainFilterView from '../view/filters-menu-main.js';
 import SortFilterView from '../view/filters-menu-sort.js';
 import { SortType } from '../const.js';
-import { nanoid } from 'nanoid';
+
 
 const FILM_COUNT_PER_STEP = 5;
 
@@ -27,7 +27,7 @@ export default class FilmsPresenter {
   #sortMainComponent = new MainFilterView();
   #sortComponent = new SortFilterView();
   #sourcedFilms = [];
-  #currentSortType = SortType.DEFAULT;
+  #currentSortType = SortType.ALL;
 
   init = (filmContainer,filmsModel) => {
     this.#filmContainer = filmContainer;
@@ -65,7 +65,6 @@ export default class FilmsPresenter {
   #renderFilmCard (film) {
     const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleFilmChange,this.#handleOpenPopup);
     filmCardPresenter.init(film);
-    console.log(film);
     this.#filmCardPresenter.set(film.id, filmCardPresenter);
   }
 
@@ -84,7 +83,7 @@ export default class FilmsPresenter {
   #clearFilmList = () => {
     this.#filmCardPresenter.forEach((presenter) => presenter.destroy());
     this.#filmCardPresenter.clear();
-    this.#filmCardPresenter = FILM_COUNT_PER_STEP;
+    this.#renderedFilmCount = FILM_COUNT_PER_STEP;
     remove(this.#loadMoreButtonComponent);
   };
 
@@ -125,7 +124,6 @@ export default class FilmsPresenter {
       default:
         this.#films = [...this.#sourcedFilms];
     }
-
     this.#currentSortType = sortType;
   };
 
@@ -133,9 +131,6 @@ export default class FilmsPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-
-    //render(new SortFilterView(), this.#filmListComponent.element);
-    //render(new MainFilterView(), this.#filmListComponent.element);
     this.#sortFilms(sortType);
     this.#clearFilmList();
     this.#renderFilmList();
