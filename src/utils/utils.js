@@ -23,4 +23,37 @@ function formatMinutesHour(value) {
   }
   return result;
 }
-export {getRandomInteger,humanizeDueDateComment,formatMinutesHour,humanizeDueDatePopup,humanizeDueDateFilmCard};
+
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
+const more = (a, b) => {
+  if (a < b) {
+    return 1;
+  }
+  return -1;
+};
+
+const sortByRating = (taskA, taskB) => {
+  const a = taskA.filmsInfo.totalRating;
+  const b = taskB.filmsInfo.totalRating;
+  return more(a,b);
+};
+const sortByDate = (taskA, taskB) => {
+  const a = taskA.filmsInfo.release.date;
+  const b = taskB.filmsInfo.release.date;
+  return dayjs(b).diff(dayjs(a));
+};
+
+export {getRandomInteger,humanizeDueDateComment,formatMinutesHour,humanizeDueDatePopup,humanizeDueDateFilmCard,updateItem,sortByDate,sortByRating};

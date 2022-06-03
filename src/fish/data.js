@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import {getRandomInteger,formatMinutesHour} from '../utils/utils.js';
 
 const generateTitleFilm = () => {
@@ -78,9 +79,9 @@ export const generateComments = (data) => {
 
 const generateCommentsArray = () => Array.from({length: getRandomInteger(0,5)},()=> getRandomInteger(1,1000));
 
-let count = 1;
+
 export const generateFilmsCard = () =>({
-  id: count++,
+  id: nanoid(),
   comments: generateCommentsArray(),
   filmsInfo:{
     title: generateTitleFilm(),
@@ -89,9 +90,7 @@ export const generateFilmsCard = () =>({
     poster: generatePosterFilm(),
     ageRating: Math.ceil(Math.random()*18),
     director: generateRandomPeople(),
-    writers: [
-      generateRandomPeople()
-    ],
+    writers: [generateRandomPeople()],
     actors: generateRandomPeople(),
     release: {
       date: generateData(),
@@ -100,12 +99,12 @@ export const generateFilmsCard = () =>({
     runtime: formatMinutesHour(Math.ceil(Math.random()*100)),
     genre: generateGenresFilm(),
     description: generateDescriptionFilm(),
-    userDetails: {
-      watchList: generateRandomBoolean(),
-      alreadyWatched: generateRandomBoolean(),
-      watchingDate: generateData(),
-      favorite: generateRandomBoolean()
-    }
+  },
+  userDetails: {
+    watchList: generateRandomBoolean(),
+    alreadyWatched: generateRandomBoolean(),
+    watchingDate: generateData(),
+    favorite: generateRandomBoolean()
   }
 });
 
