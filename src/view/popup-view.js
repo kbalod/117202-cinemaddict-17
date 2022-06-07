@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDueDatePopup } from '../utils/utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
@@ -151,19 +151,22 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
 </section>`
   );};
 
-export default class PopupFilmView extends AbstractView {
+export default class PopupFilmView extends AbstractStatefulView {
   #films = null;
   #commentsCuryFilm = null;
 
   constructor(films,commentsCuryFilm) {
     super();
     this.#films = films;
-    this.#commentsCuryFilm = commentsCuryFilm;
+    //this.#commentsCuryFilm = commentsCuryFilm;
+    this._state = PopupFilmView.commentsToState(commentsCuryFilm);
   }
 
   get template() {
-    return createPopupFilmTemplate(this.#films,this.#commentsCuryFilm);
+    return createPopupFilmTemplate(this.#films,this._state);
   }
+
+  static commentsToState = (commentsCuryFilm) => ({...commentsCuryFilm});
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
