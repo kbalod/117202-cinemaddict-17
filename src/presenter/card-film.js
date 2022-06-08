@@ -72,6 +72,10 @@ export default class FilmCardPresenter {
     ));
   };
 
+  #switchButton = () => {
+    console.log(1);
+  };
+
   #handleAlreadyWatchedClick = () => {
     this.#changeData(Object.assign(
       {},
@@ -121,6 +125,7 @@ export default class FilmCardPresenter {
     filmComponent.setClickButtonWatchListHandlerPopup(this.#handleWatchListClick);
     filmComponent.setClickButtonWatchedHandlerPopup(this.#handleAlreadyWatchedClick);
     filmComponent.setClickButtonFavoriteHandlerPopup(this.#handleFavoriteClick);
+    filmComponent.setInnerHandlers(this.#switchButton);
   };
 
 }

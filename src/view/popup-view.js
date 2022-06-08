@@ -2,6 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDueDatePopup } from '../utils/utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
+  console.log(commentsCuryFilm);
   const {filmsInfo,userDetails} = films;
   const release = humanizeDueDatePopup(filmsInfo.release.date);
   const genresNaming = filmsInfo.genre.length > 1 ? 'Genres' : 'Genre';
@@ -15,6 +16,9 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
   const checkFavorite = userDetails.favorite === true
     ? activeIconButton
     : '';
+
+
+
   const addComments = () => {
     let commentsList = '';
 
@@ -37,6 +41,7 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
     });
     return commentsList;
   };
+
 
   return (
     `<section class="film-details">
@@ -117,7 +122,9 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
       ${addComments()}
         <div class="film-details__new-comment">
 
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+
+          </div>
 
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -158,7 +165,6 @@ export default class PopupFilmView extends AbstractStatefulView {
   constructor(films,commentsCuryFilm) {
     super();
     this.#films = films;
-    //this.#commentsCuryFilm = commentsCuryFilm;
     this._state = PopupFilmView.commentsToState(commentsCuryFilm);
   }
 
@@ -166,7 +172,7 @@ export default class PopupFilmView extends AbstractStatefulView {
     return createPopupFilmTemplate(this.#films,this._state);
   }
 
-  static commentsToState = (commentsCuryFilm) => ({...commentsCuryFilm});
+  static commentsToState = (commentsCuryFilm) => ([...commentsCuryFilm]);
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
@@ -186,6 +192,16 @@ export default class PopupFilmView extends AbstractStatefulView {
   setClickButtonFavoriteHandlerPopup = (callback) => {
     this._callback.clickButtonPopupFavorite = callback;
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#clickHandlerButtonFavorite);
+  };
+
+  setInnerHandlers = (callback) => {
+    this._callback.clickPopupRadioButton = callback;
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);
+  };
+
+  #switchButton = (evt) => {
+    this._callback.clickPopupRadioButton();
+    console.log(evt.target.value);
   };
 
   #clickHandler = (evt) => {
