@@ -178,6 +178,10 @@ export default class PopupFilmView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.setInnerHandlers();
+    this.setClickHandler(this._callback.click);
+    this.setClickButtonWatchListHandlerPopup(this._callback.clickButtonPopupWatchList);
+    this.setClickButtonWatchedHandlerPopup(this._callback.clickButtonPopupWatched);
+    this.setClickButtonFavoriteHandlerPopup(this._callback.clickButtonPopupFavorite);
   };
 
   setClickHandler = (callback) => {
