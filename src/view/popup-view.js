@@ -2,8 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDueDatePopup } from '../utils/utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
-  console.log(films);
   const {filmsInfo,userDetails,emotionComment} = films;
+
   const release = humanizeDueDatePopup(filmsInfo.release.date);
   const genresNaming = filmsInfo.genre.length > 1 ? 'Genres' : 'Genre';
   const activeIconButton = 'film-details__control-button--active';
@@ -16,7 +16,11 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
   const checkFavorite = userDetails.favorite === true
     ? activeIconButton
     : '';
-  const addEmotion = () =>`<img src="./images/emoji/${emotionComment}.png" width="30" height="30" alt="emoji">`;
+  const addEmotion = () =>{
+    if(emotionComment !== null){
+      return `<img src="./images/emoji/${emotionComment}.png" width="30" height="30" alt="emoji">`;}
+    return '';
+  };
   const addComments = () => {
     let commentsList ='';
 
@@ -120,7 +124,7 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
         <div class="film-details__new-comment">
 
           <div class="film-details__add-emoji-label">
-          ${emotionComment ?? addEmotion()}
+          ${addEmotion()}
           </div>
 
           <label class="film-details__comment-label">
@@ -170,9 +174,11 @@ export default class PopupFilmView extends AbstractStatefulView {
     return createPopupFilmTemplate(this._state,this.#commentsCuryFilm);
   }
 
-  static filmsToState = (films) => ({...films, 'emotionComment': ''});
+  static filmsToState = (films) => ({...films, 'emotionComment': null});
 
-  _restoreHandlers = () => {};
+  _restoreHandlers = () => {
+    this.setInnerHandlers();
+  };
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
@@ -194,18 +200,14 @@ export default class PopupFilmView extends AbstractStatefulView {
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#clickHandlerButtonFavorite);
   };
 
-  setInnerHandlers = (callback) => {
-    this._callback.clickPopupRadioButton = callback;
+  setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);
   };
 
   #switchButton = (evt) => {
-    this._callback.clickPopupRadioButton();
-    this._setState({
-      emotionComment: evt.target.value,
-    });
-    console.log(evt.target.value);
     this.updateElement({emotionComment: evt.target.value,});
+    this._restoreHandlers();
+
   };
 
   #clickHandler = (evt) => {
