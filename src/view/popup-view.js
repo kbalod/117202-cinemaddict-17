@@ -2,8 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDueDatePopup } from '../utils/utils.js';
 
 const createPopupFilmTemplate = (films,commentsCuryFilm) => {
-  console.log(commentsCuryFilm);
-  const {filmsInfo,userDetails} = films;
+  console.log(films);
+  const {filmsInfo,userDetails,emotionComment} = films;
   const release = humanizeDueDatePopup(filmsInfo.release.date);
   const genresNaming = filmsInfo.genre.length > 1 ? 'Genres' : 'Genre';
   const activeIconButton = 'film-details__control-button--active';
@@ -16,11 +16,9 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
   const checkFavorite = userDetails.favorite === true
     ? activeIconButton
     : '';
-
-
-
+  const addEmotion = () =>`<img src="./images/emoji/${emotionComment}.png" width="30" height="30" alt="emoji">`;
   const addComments = () => {
-    let commentsList = '';
+    let commentsList ='';
 
     commentsCuryFilm.forEach((data) => {
       const { author, comment, date, emotion } = data;
@@ -41,7 +39,6 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
     });
     return commentsList;
   };
-
 
   return (
     `<section class="film-details">
@@ -123,7 +120,7 @@ const createPopupFilmTemplate = (films,commentsCuryFilm) => {
         <div class="film-details__new-comment">
 
           <div class="film-details__add-emoji-label">
-
+          ${emotionComment ?? addEmotion()}
           </div>
 
           <label class="film-details__comment-label">
@@ -164,15 +161,18 @@ export default class PopupFilmView extends AbstractStatefulView {
 
   constructor(films,commentsCuryFilm) {
     super();
-    this.#films = films;
-    this._state = PopupFilmView.commentsToState(commentsCuryFilm);
+    this._state = PopupFilmView.filmsToState(films);
+    this.#commentsCuryFilm = commentsCuryFilm;
+
   }
 
   get template() {
-    return createPopupFilmTemplate(this.#films,this._state);
+    return createPopupFilmTemplate(this._state,this.#commentsCuryFilm);
   }
 
-  static commentsToState = (commentsCuryFilm) => ([...commentsCuryFilm]);
+  static filmsToState = (films) => ({...films, 'emotionComment': ''});
+
+  _restoreHandlers = () => {};
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
@@ -201,7 +201,11 @@ export default class PopupFilmView extends AbstractStatefulView {
 
   #switchButton = (evt) => {
     this._callback.clickPopupRadioButton();
+    this._setState({
+      emotionComment: evt.target.value,
+    });
     console.log(evt.target.value);
+    this.updateElement({emotionComment: evt.target.value,});
   };
 
   #clickHandler = (evt) => {

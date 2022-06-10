@@ -73,7 +73,6 @@ export default class FilmCardPresenter {
   };
 
   #switchButton = () => {
-    console.log(1);
   };
 
   #handleAlreadyWatchedClick = () => {
