@@ -1,4 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { humanizeDueDateComment } from '../utils/utils.js';
 
 const commentTemplate = (data) => {
   const {
@@ -6,9 +7,11 @@ const commentTemplate = (data) => {
     comment,
     date,
     emotion,
+    isDisabled,
   } = data;
 
-  return `<li class="film-details__comment">
+  if(!isDisabled){
+    return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
@@ -16,37 +19,45 @@ const commentTemplate = (data) => {
       <p class="film-details__comment-text">${comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${date}</span>
+        <span class="film-details__comment-day">${humanizeDueDateComment(date)}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
   </li>`;
+  }else{
+    return '<div>';
+  }
 };
-
 export default class CommentView extends AbstractStatefulView {
   #data = null;
 
-  constructor () {
+  constructor (comments) {
     super();
 
-    this.#data = CommentView.parseFilmToData();
-    //this.#setInnerHandlers();
+    this.#data = comments;
+    this.#setDeleteClickHandlers();
   }
 
   get template () {
     return commentTemplate(this.#data);
   }
 
-  static parseFilmToData = () => {
-    const data = {};
-
-    return {...data,
-      author: '',
-      comment: '',
-      date: '',
-      emotion: '',
-    };
+  _restoreHandlers = () => {
+    this.#setDeleteClickHandlers();
   };
+
+  #setDeleteClickHandlers = () => {
+    this.element.querySelector('.film-details__comment-delete').addEventListener('click', this.#onButtonDelete);
+  };
+
+  #onButtonDelete = (evt) => {
+    evt.preventDefault();
+    this.#data = ({...this.#data,isDisabled: true,
+      isSaving: false});
+    this.updateElement(this.#data);
+  };
+
+  static parseFilmToData = () => ({...this.#data});
 
   static parseDataToFilm = (data) => {
     const comment = {...data};

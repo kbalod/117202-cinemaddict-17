@@ -1,10 +1,9 @@
 const FilterType = {
   ALL: 'all',
-  WATCH_LIST: 'watchList',
+  WATCH_LIST: 'watch-list',
   ALREADY_WATCHED: 'already-watched',
   FAVORITE: 'favorite',
 };
-
 
 const SortType = {
   DEFAULT: 'default',

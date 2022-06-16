@@ -28,7 +28,6 @@ export default class FilmCardPresenter {
 
     const prevFilmComponent = this.#filmCard;
     const prevPopupComponent = this.#filmPopup;
-console.log(prevPopupComponent)
     this.#filmCard = new CardFilmView(film);
     this.#filmPopup = new PopupFilmView(film, this.#comments);
 
@@ -53,7 +52,6 @@ console.log(prevPopupComponent)
       this.#filmPopup.renderCommentInfo(this.#comments);
 
       this.#filmPopup.element.scrollTop = scrollPosition;
-console.log(12354545)
       this.#setPopupHandlers();
     }
 

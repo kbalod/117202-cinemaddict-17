@@ -146,8 +146,8 @@ export default class PopupFilmView extends AbstractView {
   #renderComments = (comments = []) => {
     for (const comment of comments) {
       const commentComponent = new CommentView(comment);
-      console.log(this.container);
-      render(this.container, commentComponent);
+      commentComponent.setDeleteClickHandlers;
+      render(commentComponent,this.container);
     }
   };
 
@@ -176,13 +176,11 @@ export default class PopupFilmView extends AbstractView {
   };
 
   setInnerHandlers = () => {
-    //this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);
   };
 
-  #switchButton = (evt) => {
-    this.updateElement({emotionComment: evt.target.value,});
+  #switchButton = () => {
     this._restoreHandlers();
-
   };
 
   #clickHandler = (evt) => {

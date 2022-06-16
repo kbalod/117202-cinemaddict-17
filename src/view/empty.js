@@ -1,29 +1,31 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {FilterType} from '../const.js';
 
-const CUT_HREF = 23;
-const variableText = {
-  all: 'movies in our database',
-  watchlist: 'movies to watch now',
-  history: 'watched movies now',
-  favorites: 'favorite movies now',
+const NoFilmsTextType = {
+  [FilterType.ALL]: 'There are no movies in our database',
+  [FilterType.WATCH_LIST]: 'There are no movies to watch now',
+  [FilterType.ALREADY_WATCHED]: 'There are no watched movies now',
+  [FilterType.FAVORITE]: 'There are no favorite movies now',
 };
 
-const createEmptyFilmsTemplate = () => {
-  const siteMainElement = document.querySelector('.main');
-  const siteMainElementContainer = siteMainElement.querySelector('.main-navigation');
-  const siteMainElementContainerFragment = siteMainElementContainer.querySelectorAll('.main-navigation__item');
-  let checkVariableText = '';
-  siteMainElementContainerFragment.forEach((item)=> {
-    if (item.classList.contains('main-navigation__item--active')){
-      const result = item.href.substring(CUT_HREF);
-      checkVariableText = variableText[result];
-    }
-  });
-  return(`<h2 class="films-list__title">There are no ${checkVariableText}</h2>`);
+const createEmptyFilmsTemplate = (filterType) => {
+  const noFilmTextValue = NoFilmsTextType[filterType];
+
+  return (
+    `<h2 class="films-list__title">
+      ${noFilmTextValue}
+    </h2>`);
 };
 
 export default class EmptyFilmsView extends AbstractView {
+  #filterType = null;
+
+  constructor(filterType) {
+    super();
+    this.#filterType = filterType;
+  }
+
   get template() {
-    return createEmptyFilmsTemplate();
+    return createEmptyFilmsTemplate(this.#filterType);
   }
 }

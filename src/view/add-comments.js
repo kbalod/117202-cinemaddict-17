@@ -82,7 +82,6 @@ export default class AddCommentView extends AbstractStatefulView {
 
     this.#data.emoji = evt.target.value;
     this.#data.emojiChecked = evt.target.id;
-
     this.updateElement(this.#data);
   };
 
