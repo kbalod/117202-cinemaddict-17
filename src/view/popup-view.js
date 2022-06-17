@@ -32,7 +32,7 @@ const createPopupFilmTemplate = (films, commentsCuryFilm) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${filmsInfo.poster}" alt="">
+          <img class="film-details__poster-img" src="${filmsInfo.poster}" alt="">
 
           <p class="film-details__age">${filmsInfo.ageRating}+</p>
         </div>
@@ -146,7 +146,7 @@ export default class PopupFilmView extends AbstractView {
   #renderComments = (comments = []) => {
     for (const comment of comments) {
       const commentComponent = new CommentView(comment);
-      commentComponent.setDeleteClickHandlers;
+      commentComponent.setFormKeydownHandler(this.#changeData);
       render(commentComponent,this.container);
     }
   };
@@ -181,6 +181,10 @@ export default class PopupFilmView extends AbstractView {
 
   #switchButton = () => {
     this._restoreHandlers();
+  };
+
+  #changeData = () =>{
+    this._callback.changeData();
   };
 
   #clickHandler = (evt) => {

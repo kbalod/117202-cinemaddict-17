@@ -3,6 +3,7 @@ import CardFilmView from '../view/card-film.js';
 import { generateComments } from '../fish/data.js';
 import {render,remove, replace} from '../framework/render.js';
 import {UserAction, UpdateType} from '../const.js';
+import {nanoid} from 'nanoid';
 
 const siteFooterElement = document.querySelector('.footer');
 
@@ -35,7 +36,7 @@ export default class FilmCardPresenter {
     this.#filmCard.setClickButtonWatchListHandler(this.#handleWatchListClick);
     this.#filmCard.setClickButtonWatchedHandler(this.#handleAlreadyWatchedClick);
     this.#filmCard.setClickButtonFavoriteHandler(this.#handleFavoriteClick);
-
+    this.#filmPopup.
     if (prevFilmComponent === null && prevPopupComponent === null) {
       render(this.#filmCard,this.#filmListContainerComponent);
       return;
@@ -61,6 +62,18 @@ export default class FilmCardPresenter {
 
   destroy = () => {
     remove(this.#filmCard);
+  };
+
+  #handleFormSubmit = (film) => {
+    this.#changeData(
+      UserAction.ADD_ELEMENT,
+      UpdateType.MINOR,
+      // Пока у нас нет сервера, который бы после сохранения
+      // выдывал честный id задачи, нам нужно позаботиться об этом самим
+      {id: nanoid(), ...film},
+    );
+
+    this.destroy();
   };
 
   #handleWatchListClick = () => {

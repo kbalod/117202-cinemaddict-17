@@ -2,6 +2,7 @@ import FilmContainerView from '../view/films-container.js';
 import FilmListView from '../view/films-list.js';
 import FilmListContainerView from '../view/films-list-container.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
+import LoadingView from '../view/loading.js';
 import {render, RenderPosition,remove} from '../framework/render.js';
 import EmptyFilmsView from '../view/empty.js';
 import FilmCardPresenter from './card-film.js';
@@ -15,6 +16,7 @@ const FILM_COUNT_PER_STEP = 5;
 export default class FilmsPresenter {
   #filmContainer = null;
   #filmsModel = null;
+  #loadingComponent = new LoadingView();
   #filmsContainer = new FilmContainerView();
   #filmListComponent = new FilmListView();
   #filmListContainerComponent = new FilmListContainerView();
@@ -27,6 +29,7 @@ export default class FilmsPresenter {
   #loadMoreButtonComponent = null;
   #filterModel = null;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   get films() {
     this.#filterType = this.#filterModel.filter;
@@ -131,6 +134,11 @@ export default class FilmsPresenter {
         this.#clearBoard({resetRenderFilmCount: true, resetSortType: true});
         this.#renderFilmsContainer();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderFilmsContainer();
+        break;
     }
   };
 
@@ -141,6 +149,10 @@ export default class FilmsPresenter {
     this.#currentSortType = sortType;
     this.#clearBoard({resetRenderedFilmCount: true});
     this.#renderFilmsContainer();
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#filmListComponent.element, RenderPosition.AFTERBEGIN);
   };
 
   #renderSort = () => {
@@ -157,6 +169,7 @@ export default class FilmsPresenter {
     this.#filmCardPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#loadMoreButtonComponent);
 
     if (this.#emptyFilms) {
@@ -176,10 +189,15 @@ export default class FilmsPresenter {
 
 
   #renderFilmsContainer = () =>{
+    render(this.#filmsContainer, this.#filmContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const films = this.films;
     const filmCount = films.length;
-
-    render(this.#filmsContainer, this.#filmContainer);
 
     if (filmCount === 0){
       this.#renderNoFilms();

@@ -69,9 +69,10 @@ export default class AddCommentView extends AbstractStatefulView {
       }
 
       evt.preventDefault();
-      this._callback.formSubmit(AddCommentView.parseDataToFilm(this.#data));
+      this._callback.formSubmit(AddCommentView.parseDataToFilm());
     }
   };
+//AddCommentView.parseDataToFilm()
 
   #emojiChangeHandler = (evt) => {
     evt.preventDefault();
