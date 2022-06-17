@@ -1,9 +1,10 @@
-import {SortType} from '../const';
+import {FilterType} from '../const';
 
 const filter = {
-  [SortType.WATCH_LIST]: (films) => films.filter(({userDetails}) => !!userDetails.watchList),
-  [SortType.ALREADY_WATCHED]: (films) => films.filter(({userDetails}) => !!userDetails.alreadyWatched),
-  [SortType.FAVORITE]: (films) => films.filter(({userDetails}) =>!!userDetails.favorite),
+  [FilterType.ALL]: (films) => films.filter(({userDetails}) => userDetails),
+  [FilterType.WATCH_LIST]: (films) => films.filter(({userDetails}) => !!userDetails.watchList),
+  [FilterType.ALREADY_WATCHED]: (films) => films.filter(({userDetails}) => !!userDetails.alreadyWatched),
+  [FilterType.FAVORITE]: (films) => films.filter(({userDetails}) =>!!userDetails.favorite),
 };
 
 
