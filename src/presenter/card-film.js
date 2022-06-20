@@ -12,31 +12,33 @@ export default class FilmCardPresenter {
 
   #filmCard = null;
   #filmPopup = null;
-
+  #commentsModel = [];
   #film = null;
   #comments = null;
   #changeData = null;
-
-  constructor(filmListContainerComponent, changeData) {
+  #filmsModel = null;
+  #curElement = null;
+  constructor(filmListContainerComponent, changeData,commentsModel,filmsModel) {
     this.#filmListContainerComponent = filmListContainerComponent;
     this.#changeData = changeData;
-
+    this.#commentsModel = commentsModel;
+    this.#filmsModel = filmsModel;
   }
 
   init = (film) => {
     this.#film = film;
-    this.#comments = generateComments(film.comments);
 
     const prevFilmComponent = this.#filmCard;
     const prevPopupComponent = this.#filmPopup;
+    this.#curElement = this.#filmsModel.films.find((item)=> item.id === this.#film.id);
     this.#filmCard = new CardFilmView(film);
-    this.#filmPopup = new PopupFilmView(film, this.#comments);
+    this.#filmPopup = new PopupFilmView(film, this.#commentsModel.comments);
 
     this.#filmCard.setClickHandler(this.#onFilmCardClick);
     this.#filmCard.setClickButtonWatchListHandler(this.#handleWatchListClick);
     this.#filmCard.setClickButtonWatchedHandler(this.#handleAlreadyWatchedClick);
     this.#filmCard.setClickButtonFavoriteHandler(this.#handleFavoriteClick);
-    this.#filmPopup.
+
     if (prevFilmComponent === null && prevPopupComponent === null) {
       render(this.#filmCard,this.#filmListContainerComponent);
       return;
@@ -50,7 +52,7 @@ export default class FilmCardPresenter {
       const scrollPosition = prevPopupComponent.element.scrollTop;
 
       replace(this.#filmPopup, prevPopupComponent);
-      this.#filmPopup.renderCommentInfo(this.#comments);
+      this.#filmPopup.renderCommentInfo(this.#commentsModel.comments);
 
       this.#filmPopup.element.scrollTop = scrollPosition;
       this.#setPopupHandlers();
@@ -64,52 +66,49 @@ export default class FilmCardPresenter {
     remove(this.#filmCard);
   };
 
-  #handleFormSubmit = (film) => {
-    this.#changeData(
-      UserAction.ADD_ELEMENT,
-      UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...film},
-    );
+  #handlePopupAction = async (updateType, update) => {
 
-    this.destroy();
+    this.#commentsModel.init(update);
+    if (update.deletedCommentId) {await this.#commentsModel.deleteComment(updateType, update);}
+    if (update.newComment) {await this.#commentsModel.addComment(updateType, update);}
+    this.#filmsModel.updateFilm(updateType, update);
   };
 
   #handleWatchListClick = () => {
-    this.#changeData(UserAction.UPDATE_ELEMENT,
-      UpdateType.PATCH,Object.assign(
-        {},
-        this.#film,
+    //this.#curElement.userDetails.watchList = true;
+    console.log(this.#film);
+    console.log(this.#film.userDetails.watchList);
+    //this.#changeData(UserAction.UPDATE_ELEMENT,UpdateType.PATCH,{...this.#film, userDetails: {...this.#film.userDetails, watchList: !this.#film.userDetails.watchList}});
+    this.#changeData(UpdateType.PATCH,Object.assign(
+      {},
+      this.#curElement,
+      {
+        userDetails:
         {
-          userDetails:
-        {
-          watchList: !this.#film.userDetails.watchList,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          favorite: this.#film.userDetails.favorite,
-          watchingDate: this.#film.userDetails.watchingDate
+          watchList: !this.#curElement.userDetails.watchList,
+          alreadyWatched: this.#curElement.userDetails.alreadyWatched,
+          favorite: this.#curElement.userDetails.favorite,
+          watchingDate: this.#curElement.userDetails.watchingDate
         },
-        },
-      ));
+      },
+    ));
+    console.log(this.#curElement);
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData(UserAction.UPDATE_ELEMENT,
-      UpdateType.PATCH,Object.assign(
-        {},
-        this.#film,
-        {
-          userDetails:
+    this.#changeData(Object.assign({},this.#film,
+      {
+        userDetails:
         {
           watchList: this.#film.userDetails.watchList,
           alreadyWatched: this.#film.userDetails.alreadyWatched,
           favorite: !this.#film.userDetails.favorite,
           watchingDate: this.#film.userDetails.watchingDate
         },
-        },
-      ));
+      },
+    ));
+    console.log(this.#film);
   };
-
 
   #handleAlreadyWatchedClick = () => {
     this.#changeData(UserAction.UPDATE_ELEMENT,
@@ -144,7 +143,7 @@ export default class FilmCardPresenter {
 
   #renderPopup = () => {
     render(this.#filmPopup, siteFooterElement);
-    this.#filmPopup.renderCommentInfo(this.#comments);
+    this.#filmPopup.renderCommentInfo(this.#commentsModel.comments);
 
     document.body.classList.add('hide-overflow');
 
@@ -153,11 +152,15 @@ export default class FilmCardPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onFilmCardClick = () => {
-    if (!document.body.contains(this.#filmPopup.element)) {
+  #onFilmCardClick = async () => {
+    if (document.querySelector('.film-details')) {
+      if (!document.body.contains(this.#filmPopup.element)) {await this.#commentsModel.init(this.#film.id);}
       this.#removePopup();
-      this.#renderPopup();
+    } else {
+      await this.#commentsModel.init(this.#film.id);
     }
+
+    this.#renderPopup(this.#film);
   };
 
   #escKeyDownHandler = (evt) => {

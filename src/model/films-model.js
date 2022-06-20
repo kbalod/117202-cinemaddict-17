@@ -8,6 +8,10 @@ export default class FilmsModel extends Observable{
   constructor(filmsApiService) {
     super();
     this.#filmsApiService = filmsApiService;
+
+    this.#filmsApiService.films.then((films) => {
+      console.log(films.map(this.#adaptToClient));
+    });
   }
 
   get films() {
@@ -19,7 +23,6 @@ export default class FilmsModel extends Observable{
     try {
       const films = await this.#filmsApiService.films;
       this.#films = films.map(this.#adaptToClient);
-      console.log(this.#films);
     } catch(err) {
       this.#films = [];
     }
@@ -109,6 +112,7 @@ export default class FilmsModel extends Observable{
 
     return adaptedFilm;
   };
+
 }
 
 export {MAX_FILMS};

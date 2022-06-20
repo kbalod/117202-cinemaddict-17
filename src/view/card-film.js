@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDueDateFilmCard } from '../utils/utils.js';
 
+const MAX_DESCRIPTION_LENGTH = 139;
+
 const createCardFilmTemplate = (films) => {
   const {filmsInfo,comments,userDetails} = films;
   const activeIcon = 'film-card__controls-item--active';
@@ -14,7 +16,7 @@ const createCardFilmTemplate = (films) => {
     ? activeIcon
     : '';
   const release = humanizeDueDateFilmCard(filmsInfo.release.date);
-
+  const createCardDescription = () => filmsInfo.description.length > MAX_DESCRIPTION_LENGTH ? `${filmsInfo.description.slice(0, MAX_DESCRIPTION_LENGTH + 1)}...` : filmsInfo.description;
   return (
     `<article class="film-card">
   <a class="film-card__link">
@@ -23,10 +25,10 @@ const createCardFilmTemplate = (films) => {
     <p class="film-card__info">
       <span class="film-card__year">${release}</span>
       <span class="film-card__duration">${filmsInfo.runtime}</span>
-      <span class="film-card__genre">${filmsInfo.genre}</span>
+      <span class="film-card__genre">${filmsInfo.genre.length > 1 ? filmsInfo.genre.join(', ') : filmsInfo.genre}</span>
     </p>
     <img src="${filmsInfo.poster}" alt="" class="film-card__poster">
-    <p class="film-card__description">${filmsInfo.description}</p>
+    <p class="film-card__description">${createCardDescription()}</p>
     <span class="film-card__comments">${comments.length} comments</span>
   </a>
   <div class="film-card__controls">

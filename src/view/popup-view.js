@@ -146,7 +146,7 @@ export default class PopupFilmView extends AbstractView {
   #renderComments = (comments = []) => {
     for (const comment of comments) {
       const commentComponent = new CommentView(comment);
-      commentComponent.setFormKeydownHandler(this.#changeData);
+      //commentComponent.setFormKeydownHandler(this.#changeData);
       render(commentComponent,this.container);
     }
   };
@@ -179,6 +179,11 @@ export default class PopupFilmView extends AbstractView {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);
   };
 
+  setClickHandler = (callback) => {
+    this._callback.filmCardClick = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#clickHandlerFilm);
+  };
+
   #switchButton = () => {
     this._restoreHandlers();
   };
@@ -190,6 +195,11 @@ export default class PopupFilmView extends AbstractView {
   #clickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
+  };
+
+  #clickHandlerFilm = (evt) => {
+    evt.preventDefault();
+    this._callback.filmCardClick();
   };
 
   #clickHandlerButtonWatchList = (evt) => {

@@ -30,6 +30,7 @@ export default class FilmsPresenter {
   #filterModel = null;
   #filterType = FilterType.ALL;
   #isLoading = true;
+  #commentsModel = null;
 
   get films() {
     this.#filterType = this.#filterModel.filter;
@@ -46,18 +47,20 @@ export default class FilmsPresenter {
     return filteredFilms;
   }
 
-  init = (filmContainer,filmsModel,filterModel) => {
+  init = (filmContainer,filmsModel,filterModel,commentsModel) => {
     this.#filmContainer = filmContainer;
     this.#filmsModel = filmsModel;
     this.#films = [...this.#filmsModel.films];
     this.#filterModel = filterModel;
+    this.#commentsModel = commentsModel;
 
     render(this.#filmListComponent, this.#filmsContainer.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
     this.#renderFilmsContainer();
 
-    this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filmsModel.addObserver(this.#handleFilmEvent);
+    this.#commentsModel.addObserver(this.#handleFilmEvent);
+    this.#filterModel.addObserver(this.#handleFilmEvent);
   };
 
   #handleModeChange = () => {
@@ -84,7 +87,7 @@ export default class FilmsPresenter {
   };
 
   #renderFilmCard (film) {
-    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleViewAction,this.#handleModeChange);
+    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleViewAction,this.#commentsModel,this.#filmsModel);
     filmCardPresenter.init(film);
     this.#filmCardPresenter.set(film.id, filmCardPresenter);
   }
@@ -107,21 +110,26 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
-    switch (actionType) {
+  #handleViewAction = async (updateType, update) => {
+    switch(UserAction) {
       case UserAction.UPDATE_ELEMENT:
+        console.log('1');
         this.#filmsModel.updateFilm(updateType, update);
         break;
-      case UserAction.ADD_ELEMENT:
-        this.#filmsModel.addFilm(updateType, update);
-        break;
       case UserAction.DELETE_ELEMENT:
-        this.#filmsModel.deleteFilm(updateType, update);
+        // this.#commentsModel.deleteComment(updateType, update.commentId);
+        this.#filmsModel.deleteComment(updateType, update.filmId, update.commentId);
         break;
+      case UserAction.ADD_ELEMENT: {
+        // this.#commentsModel.addComment(updateType, {...update, commentId });
+        this.#filmsModel.addComment(updateType, update);
+        break;
+      }
     }
   };
 
-  #handleModelEvent = (updateType, data) => {
+
+  #handleFilmEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#filmCardPresenter.get(data.id).init(data);
@@ -147,6 +155,7 @@ export default class FilmsPresenter {
       return;
     }
     this.#currentSortType = sortType;
+    this.#handleFilmEvent(UpdateType.MINOR, this.isSorting = true);
     this.#clearBoard({resetRenderedFilmCount: true});
     this.#renderFilmsContainer();
   };
