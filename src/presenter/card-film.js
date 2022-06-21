@@ -18,11 +18,14 @@ export default class FilmCardPresenter {
   #changeData = null;
   #filmsModel = null;
   #curElement = null;
-  constructor(filmListContainerComponent, changeData,commentsModel,filmsModel) {
+  #filterModel = null;
+
+  constructor(filmListContainerComponent, changeData,commentsModel,filmsModel,filterModel) {
     this.#filmListContainerComponent = filmListContainerComponent;
     this.#changeData = changeData;
     this.#commentsModel = commentsModel;
     this.#filmsModel = filmsModel;
+    this.#filterModel = filterModel;
   }
 
   init = (film) => {
@@ -75,44 +78,43 @@ export default class FilmCardPresenter {
   };
 
   #handleWatchListClick = () => {
-    //this.#curElement.userDetails.watchList = true;
-    console.log(this.#film);
-    console.log(this.#film.userDetails.watchList);
-    //this.#changeData(UserAction.UPDATE_ELEMENT,UpdateType.PATCH,{...this.#film, userDetails: {...this.#film.userDetails, watchList: !this.#film.userDetails.watchList}});
-    this.#changeData(UpdateType.PATCH,Object.assign(
-      {},
-      this.#curElement,
-      {
-        userDetails:
+    this.#changeData(UserAction.UPDATE_ELEMENT,
+      this.#filterModel.filter === 'all' ? UpdateType.PATCH : UpdateType.MAJOR,
+      Object.assign(
+        {},
+        this.#film,
         {
-          watchList: !this.#curElement.userDetails.watchList,
-          alreadyWatched: this.#curElement.userDetails.alreadyWatched,
-          favorite: this.#curElement.userDetails.favorite,
-          watchingDate: this.#curElement.userDetails.watchingDate
+          userDetails:
+        {
+          watchList: !this.#film.userDetails.watchList,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          favorite: this.#film.userDetails.favorite,
+          watchingDate: this.#film.userDetails.watchingDate
         },
-      },
-    ));
-    console.log(this.#curElement);
+        },
+      ));
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData(Object.assign({},this.#film,
-      {
-        userDetails:
+    this.#changeData(UserAction.UPDATE_ELEMENT,
+      this.#filterModel.filter === 'all' ? UpdateType.PATCH : UpdateType.MAJOR,
+      Object.assign({},this.#film,
+        {
+          userDetails:
         {
           watchList: this.#film.userDetails.watchList,
           alreadyWatched: this.#film.userDetails.alreadyWatched,
           favorite: !this.#film.userDetails.favorite,
           watchingDate: this.#film.userDetails.watchingDate
         },
-      },
-    ));
-    console.log(this.#film);
+        },
+      ));
   };
 
   #handleAlreadyWatchedClick = () => {
     this.#changeData(UserAction.UPDATE_ELEMENT,
-      UpdateType.PATCH,Object.assign(
+      this.#filterModel.filter === 'all' ? UpdateType.PATCH : UpdateType.MAJOR,
+      Object.assign(
         {},
         this.#film,
         {

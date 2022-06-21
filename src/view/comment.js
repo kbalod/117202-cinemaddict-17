@@ -35,27 +35,34 @@ export default class CommentView extends AbstractStatefulView {
     super();
 
     this.#data = comments;
-    this.#setDeleteClickHandlers();
   }
 
   get template () {
     return commentTemplate(this.#data);
   }
 
-  _restoreHandlers = () => {
-    this.#setDeleteClickHandlers();
+  setDeleteClickHandlers = (callback) => {
+    this._callback.clickButtonDelete = callback;
+    if(this.element.querySelector('.film-details__comment-delete')){
+      this.element.querySelector('.film-details__comment-delete').addEventListener('click', this.#onButtonDelete);}
   };
 
-  #setDeleteClickHandlers = () => {
-    this.element.querySelector('.film-details__comment-delete').addEventListener('click', this.#onButtonDelete);
+  _restoreHandlers = () => {
+    this.setDeleteClickHandlers(this.#onButtonDelete);
   };
 
   #onButtonDelete = (evt) => {
     evt.preventDefault();
     this.#data = ({...this.#data,isDisabled: true,
       isSaving: false});
-    this.updateElement(this.#data);
+    //this.updateElement({...this.#data,isDisabled: true,isSaving: false});
+
+    return this.#data;
   };
+
+  get dataElement (){
+    return this.#data;
+  }
 
   static parseFilmToData = () => ({...this.#data});
 

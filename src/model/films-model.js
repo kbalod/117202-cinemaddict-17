@@ -8,10 +8,6 @@ export default class FilmsModel extends Observable{
   constructor(filmsApiService) {
     super();
     this.#filmsApiService = filmsApiService;
-
-    this.#filmsApiService.films.then((films) => {
-      console.log(films.map(this.#adaptToClient));
-    });
   }
 
   get films() {
@@ -33,50 +29,23 @@ export default class FilmsModel extends Observable{
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update unexisting film');
+      throw new Error('Can\'t update unexisting movie');
     }
+
     try {
       const response = await this.#filmsApiService.updateFilm(update);
-      const updatedFilm = this.#adaptToClient(response);
+      const updatedMovie = this.#adaptToClient(response);
       this.#films = [
         ...this.#films.slice(0, index),
-        update,
+        updatedMovie,
         ...this.#films.slice(index + 1),
       ];
-
-      this._notify(updateType, updatedFilm);
+      this._notify(updateType, update);
     } catch(err) {
-      throw new Error('Can\'t update film');
-    }
-  };
-
-  addFilm = async (updateType, update) => {
-    try {
-      const response = await this.#filmsApiService.addFilm(update);
-      const newFilm = this.#adaptToClient(response);
-      this.#films = [newFilm,...this.#films,];
-
-      this._notify(updateType, newFilm);
-    } catch(err) {
-      throw new Error('Can\'t add film');
-    }
-  };
-
-  deleteFilm = async (updateType, update) => {
-    const index = this.#films.findIndex((film) => film.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting film');
-    }
-    try {
-      await this.#filmsApiService.deleteFilm(update);
-      this.#films = [
-        ...this.#films.slice(0, index),
-        ...this.#films.slice(index + 1),
-      ];
-      this._notify(updateType);
-    } catch(err) {
-      throw new Error('Can\'t delete task');
+      Error.CHANGING = true;
+      update = this.films.find((item) => item.id === update.id);
+      this._notify(UpdateType.PATCH, update);
+      throw new Error('Can\'t update movie');
     }
   };
 

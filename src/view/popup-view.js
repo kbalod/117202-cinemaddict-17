@@ -110,12 +110,14 @@ export default class PopupFilmView extends AbstractView {
   #commentsCuryFilm = null;
   #addCommentComponent = null;
   #container = null;
-
+  #changeComment = null;
+  #commentsNew = new Map();
   constructor(films,commentsCuryFilm) {
     super();
     this._state = PopupFilmView.filmsToState(films);
     this.#commentsCuryFilm = commentsCuryFilm;
     this.#addCommentComponent = new AddCommentView();
+    this.#changeComment = {};
   }
 
   get template() {
@@ -146,8 +148,9 @@ export default class PopupFilmView extends AbstractView {
   #renderComments = (comments = []) => {
     for (const comment of comments) {
       const commentComponent = new CommentView(comment);
-      //commentComponent.setFormKeydownHandler(this.#changeData);
+      commentComponent.setDeleteClickHandlers(this.#handleDeleteCommentClick);
       render(commentComponent,this.container);
+      this.#commentsNew.set(commentComponent.dataElement);
     }
   };
 
@@ -218,5 +221,13 @@ export default class PopupFilmView extends AbstractView {
     evt.preventDefault();
     this._callback.clickButtonPopupFavorite();
     evt.target.classList.toggle('film-details__control-button--active');
+  };
+
+  #handleDeleteCommentClick = () => {
+    console.log(this.#commentsNew);
+  };
+
+  test2 = (data) => {
+    console.log(data);
   };
 }
