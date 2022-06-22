@@ -5,32 +5,32 @@ const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
 const addCommentTemplate = (data) => {
   const {
-    emoji,
-    text,
+    emotion,
+    comment,
     emojiChecked,
     isDisabled,
   } = data;
 
   return `<div class="film-details__new-comment">
     <div class="film-details__add-emoji-label">
-      ${emoji !== null ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}"></img>` : '' }
+      ${emotion !== null ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '' }
     </div>
 
     <label class="film-details__comment-label">
-      <textarea ${isDisabled ? 'disabled' : ''} class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text}</textarea>
+      <textarea ${isDisabled ? 'disabled' : ''} class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment}</textarea>
     </label>
 
     <div class="film-details__emoji-list">
-      ${EMOTIONS.map((emotion) => `
+      ${EMOTIONS.map((emoji) => `
         <input class="film-details__emoji-item visually-hidden"
         ${isDisabled ? 'disabled' : ''}
         name="comment-emoji"
         type="radio"
-        id="emoji-${emotion}"
-        value="${emotion}"
-        ${emojiChecked === `emoji-${emotion}` ? 'checked' : ''}>
-        <label class="film-details__emoji-label" for="emoji-${emotion}">
-          <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji">
+        id="emoji-${emoji}"
+        value="${emoji}"
+        ${emojiChecked === `emoji-${emoji}` ? 'checked' : ''}>
+        <label class="film-details__emoji-label" for="emoji-${emoji}">
+          <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
         </label>
       `).join('')}
     </div>
@@ -64,34 +64,33 @@ export default class AddCommentView extends AbstractStatefulView {
   #formKeydownHandler = (evt) => {
     if (evt.key === ENTER && (evt.metaKey === true || evt.ctrlKey === true)) {
 
-      if (!this.#data.emoji || !this.#data.text) {
+      if (!this.#data.emotion || !this.#data.comment) {
         return;
       }
 
       evt.preventDefault();
-      this._callback.formSubmit(AddCommentView.parseDataToFilm());
+      this._callback.formSubmit(AddCommentView.parseDataToFilm(this.#data));
     }
   };
-//AddCommentView.parseDataToFilm()
 
   #emojiChangeHandler = (evt) => {
     evt.preventDefault();
 
-    if (this.#data.emoji === evt.target.value) {
+    if (this.#data.emotion === evt.target.value) {
       return;
     }
 
-    this.#data.emoji = evt.target.value;
+    this.#data.emotion = evt.target.value;
     this.#data.emojiChecked = evt.target.id;
     this.updateElement(this.#data);
   };
 
   #commentInputHandler = (evt) => {
-    if (this.#data.text === evt.target.value) {
+    if (this.#data.comment === evt.target.value) {
       return;
     }
 
-    this.#data.text = evt.target.value;
+    this.#data.comment = evt.target.value;
   };
 
   #setInnerHandlers = () => {
@@ -103,8 +102,8 @@ export default class AddCommentView extends AbstractStatefulView {
     const data = {};
 
     return {...data,
-      emoji: null,
-      text: '',
+      emotion: null,
+      comment: '',
       emojiChecked: '',
       isDisabled: false,
       isSaving: false,

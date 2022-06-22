@@ -16,7 +16,7 @@ export default class AbstractView {
 
   /** @type {Object} Объект с колбэками. Может использоваться для хранения обработчиков событий */
   _callback = {};
-
+  _data = {};
   constructor() {
     if (new.target === AbstractView) {
       throw new Error('Can\'t instantiate AbstractView, only concrete one.');
@@ -34,6 +34,30 @@ export default class AbstractView {
 
     return this.#element;
   }
+
+  updateData = (update, dataUpdating) => {
+    if(!update){
+      return;
+    }
+    this._data = {...this.data,...update};
+
+    if(dataUpdating){
+      return;
+    }
+    this.#rerenderElement();
+  };
+
+  #rerenderElement = () => {
+    const prevElement = this.element;
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.element;
+
+    parent.replaceChild(newElement, prevElement);
+
+    this._restoreHandlers();
+  };
 
   /**
    * Геттер для получения разметки элемента

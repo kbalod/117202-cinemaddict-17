@@ -1,10 +1,11 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDueDatePopup } from '../utils/utils.js';
 import AddCommentView from './add-comments.js';
 import CommentView from './comment.js';
 import {render} from '../render.js';
+import { UpdateType, UserAction } from '../const.js';
 
-const createPopupFilmTemplate = (films, commentsCuryFilm) => {
+const createPopupFilmTemplate = (films, comments) => {
   const {filmsInfo,userDetails} = films;
 
   const release = humanizeDueDatePopup(filmsInfo.release.date);
@@ -97,7 +98,7 @@ const createPopupFilmTemplate = (films, commentsCuryFilm) => {
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCuryFilm.length}</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.comments.length}</span></h3>
         <ul class="film-details__comments-list"></ul>
       </section>
     </div>
@@ -105,23 +106,25 @@ const createPopupFilmTemplate = (films, commentsCuryFilm) => {
 </section>`
   );};
 
-export default class PopupFilmView extends AbstractView {
+export default class PopupFilmView extends AbstractStatefulView {
   #films = null;
-  #commentsCuryFilm = null;
+  #comments = null;
   #addCommentComponent = null;
   #container = null;
   #changeComment = null;
   #commentsNew = new Map();
-  constructor(films,commentsCuryFilm) {
+
+  constructor(films,comments,changeData,changePresenter) {
     super();
     this._state = PopupFilmView.filmsToState(films);
-    this.#commentsCuryFilm = commentsCuryFilm;
+    this.#comments = comments;
     this.#addCommentComponent = new AddCommentView();
-    this.#changeComment = {};
+    this.#changeData = changeData;
+    this.changePresenter = changePresenter;
   }
 
   get template() {
-    return createPopupFilmTemplate(this._state,this.#commentsCuryFilm);
+    return createPopupFilmTemplate(this._state,this.#comments);
   }
 
   get container () {
@@ -150,11 +153,12 @@ export default class PopupFilmView extends AbstractView {
       const commentComponent = new CommentView(comment);
       commentComponent.setDeleteClickHandlers(this.#handleDeleteCommentClick);
       render(commentComponent,this.container);
-      this.#commentsNew.set(commentComponent.dataElement);
+      this.#commentsNew.set(comment.id,commentComponent);
     }
   };
 
   #renderAddComment = () => {
+    this.#addCommentComponent.setFormKeydownHandler(this.#handleAddComment);
     render(this.#addCommentComponent, this.container);
   };
 
@@ -179,20 +183,33 @@ export default class PopupFilmView extends AbstractView {
   };
 
   setInnerHandlers = () => {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);
+    if(this.element.querySelector('.film-details__emoji-list')){
+      this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);}
   };
 
   setClickHandler = (callback) => {
     this._callback.filmCardClick = callback;
-    this.element.querySelector('.film-card__link').addEventListener('click', this.#clickHandlerFilm);
+    this.element.querySelector('.film-details__bottom-container').addEventListener('click', this.#clickHandlerFilm);
+  };
+
+  setDeleteButtonClick = (callback) => {
+    this._callback.clickDeleteButton = callback;
+    if(this.element.querySelector('.film-details__comment-delete')){
+      this.element.querySelectorAll('.film-details__comment-delete').forEach((item)=> item.addEventListener('click', this.#onDeleteButtonClick));}
+  };
+
+  #onDeleteButtonClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickDeleteButton();
+  };
+
+  #changeData = () => {
+
   };
 
   #switchButton = () => {
     this._restoreHandlers();
-  };
-
-  #changeData = () =>{
-    this._callback.changeData();
+    console.log(this.element.querySelectorAll('.film-details__comment'));
   };
 
   #clickHandler = (evt) => {
@@ -202,7 +219,7 @@ export default class PopupFilmView extends AbstractView {
 
   #clickHandlerFilm = (evt) => {
     evt.preventDefault();
-    this._callback.filmCardClick();
+    //this._callback.filmCardClick();
   };
 
   #clickHandlerButtonWatchList = (evt) => {
@@ -223,11 +240,21 @@ export default class PopupFilmView extends AbstractView {
     evt.target.classList.toggle('film-details__control-button--active');
   };
 
-  #handleDeleteCommentClick = () => {
-    console.log(this.#commentsNew);
+  #handleDeleteCommentClick = (update) => {
+    this.#changeData(UserAction.DELETE_ELEMENT,UpdateType.PATCH,update);
+    //this._state.comments = this._state.comments.filter((item)=> item !== update);
+    //this.changePresenter(UpdateType.PATCH,this._state.comments.filter((item)=> item !== update));
   };
 
-  test2 = (data) => {
-    console.log(data);
+  #handleAddComment = async (update) => {
+    this.#changeData(UserAction.ADD_ELEMENT,UpdateType.PATCH,update);
+    console.log(this._state.id);
+    await this.#comments.init(this._state.id);
+    //await this.#comments.comments.map((element) => element.id);
+    this._state.comments = await this.#comments.comments.map((element) => element.id);
+    this.updateElement(this._state.comment);
+    delete this._state.emotionComment;
+    console.log(await this._state);
+    //this.changePresenter(UserAction.UPDATE_ELEMENT,UpdateType.PATCH,this._state);
   };
 }

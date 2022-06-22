@@ -19,13 +19,15 @@ export default class FilmCardPresenter {
   #filmsModel = null;
   #curElement = null;
   #filterModel = null;
+  #presenterChange = null;
 
-  constructor(filmListContainerComponent, changeData,commentsModel,filmsModel,filterModel) {
+  constructor(filmListContainerComponent, changeData,commentsModel,filmsModel,filterModel,presenterChange) {
     this.#filmListContainerComponent = filmListContainerComponent;
     this.#changeData = changeData;
     this.#commentsModel = commentsModel;
     this.#filmsModel = filmsModel;
     this.#filterModel = filterModel;
+    this.#presenterChange = presenterChange;
   }
 
   init = (film) => {
@@ -34,8 +36,8 @@ export default class FilmCardPresenter {
     const prevFilmComponent = this.#filmCard;
     const prevPopupComponent = this.#filmPopup;
     this.#curElement = this.#filmsModel.films.find((item)=> item.id === this.#film.id);
-    this.#filmCard = new CardFilmView(film);
-    this.#filmPopup = new PopupFilmView(film, this.#commentsModel.comments);
+    this.#filmCard = new CardFilmView(film,this.#commentsModel);
+    this.#filmPopup = new PopupFilmView(film, this.#commentsModel,this.#handleViewAction,this.#presenterChange);
 
     this.#filmCard.setClickHandler(this.#onFilmCardClick);
     this.#filmCard.setClickButtonWatchListHandler(this.#handleWatchListClick);
@@ -69,12 +71,32 @@ export default class FilmCardPresenter {
     remove(this.#filmCard);
   };
 
-  #handlePopupAction = async (updateType, update) => {
-
-    this.#commentsModel.init(update);
-    if (update.deletedCommentId) {await this.#commentsModel.deleteComment(updateType, update);}
-    if (update.newComment) {await this.#commentsModel.addComment(updateType, update);}
-    this.#filmsModel.updateFilm(updateType, update);
+  #handleViewAction = async (actionType,updateType, update) => {
+    //this.#commentsModel.init(this.#film.id);
+    switch(actionType){
+      case UserAction.ADD_ELEMENT:
+        try{
+          await this.#commentsModel.addComment(updateType, update,this.#film.id);
+          this.#removePopup();
+          this.#renderPopup();
+        }catch (err){
+          throw new Error('Can\'t add comment');
+        }
+        break;
+      case UserAction.DELETE_ELEMENT:
+        try{
+          await this.#commentsModel.deleteComment(updateType, update);
+          this.#removePopup();
+          this.#renderPopup();
+        }catch (err){
+          throw new Error('Can\'t delete comment');
+        }
+        break;
+    }
+    //this.#commentsModel.init(update);
+    //if (update.deletedCommentId) {await this.#commentsModel.deleteComment(updateType, update);}
+    //if (update.newComment) {await this.#commentsModel.addComment(updateType, update);}
+    //this.#filmsModel.updateFilm(updateType, update);
   };
 
   #handleWatchListClick = () => {
@@ -129,12 +151,19 @@ export default class FilmCardPresenter {
       ));
   };
 
+  #changeCardClick = async () => {
+//console.log(this.#film);
+//console.log(this.#film);
+    //await this.#changeData(UserAction.UPDATE_ELEMENT,UpdateType.PATCH,this.#film);
+  };
+
   #setPopupHandlers = () => {
     this.#filmPopup.setClickButtonCloseHandlerPopup(this.#removePopup);
     this.#filmPopup.setClickButtonWatchListHandlerPopup(this.#handleWatchListClick);
     this.#filmPopup.setClickButtonWatchedHandlerPopup(this.#handleAlreadyWatchedClick);
     this.#filmPopup.setClickButtonFavoriteHandlerPopup(this.#handleFavoriteClick);
     this.#filmPopup.setInnerHandlers();
+    this.#filmPopup.setDeleteButtonClick(this.#changeCardClick);
   };
 
   #removePopup = () => {

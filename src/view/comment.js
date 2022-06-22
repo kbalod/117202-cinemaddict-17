@@ -34,7 +34,7 @@ export default class CommentView extends AbstractStatefulView {
   constructor (comments) {
     super();
 
-    this.#data = comments;
+    this.#data = CommentView.parseCommentToData(comments);
   }
 
   get template () {
@@ -53,21 +53,23 @@ export default class CommentView extends AbstractStatefulView {
 
   #onButtonDelete = (evt) => {
     evt.preventDefault();
-    this.#data = ({...this.#data,isDisabled: true,
-      isSaving: false});
-    //this.updateElement({...this.#data,isDisabled: true,isSaving: false});
-
-    return this.#data;
+    this._callback.clickButtonDelete(CommentView.parseDataToComments(this.#data).id);
   };
 
   get dataElement (){
     return this.#data;
   }
 
-  static parseFilmToData = () => ({...this.#data});
+  static parseCommentToData = (comment) => ({...comment,
+    isDisabled:false,
+    isDeleting:false,
+  });
 
-  static parseDataToFilm = (data) => {
+  static parseDataToComments = (data) => {
     const comment = {...data};
+
+    delete comment.isDisabled;
+    delete comment.isDeleting;
 
     return comment;
   };

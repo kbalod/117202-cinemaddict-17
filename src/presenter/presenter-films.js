@@ -87,7 +87,7 @@ export default class FilmsPresenter {
   };
 
   #renderFilmCard (film) {
-    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleViewAction,this.#commentsModel,this.#filmsModel,this.#filterModel);
+    const filmCardPresenter = new FilmCardPresenter(this.#filmListContainerComponent.element,this.#handleViewAction,this.#commentsModel,this.#filmsModel,this.#filterModel,this.#handleFilmEvent);
     filmCardPresenter.init(film);
     this.#filmCardPresenter.set(film.id, filmCardPresenter);
   }
@@ -111,16 +111,16 @@ export default class FilmsPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
+    console.log(this.#films);
+    console.log(actionType, updateType, update);
     switch(actionType) {
       case UserAction.UPDATE_ELEMENT:
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.DELETE_ELEMENT:
-        // this.#commentsModel.deleteComment(updateType, update.commentId);
         this.#filmsModel.deleteComment(updateType, update.filmId, update.commentId);
         break;
       case UserAction.ADD_ELEMENT: {
-        // this.#commentsModel.addComment(updateType, {...update, commentId });
         this.#filmsModel.addComment(updateType, update);
         break;
       }

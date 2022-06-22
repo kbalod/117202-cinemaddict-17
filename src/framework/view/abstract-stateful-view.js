@@ -6,7 +6,6 @@ import AbstractView from './abstract-view.js';
 export default class AbstractStatefulView extends AbstractView {
   /** @type {Object} Объект состояния */
   _state = {};
-
   /**
    * Метод для обновления состояния и перерисовки элемента
    * @param {Object} update Объект с обновлённой частью состояния
@@ -20,6 +19,7 @@ export default class AbstractStatefulView extends AbstractView {
 
     this.#rerenderElement();
   };
+
 
   /**
    * Метод для восстановления обработчиков после перерисовки элемента

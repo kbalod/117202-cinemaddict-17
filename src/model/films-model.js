@@ -1,7 +1,6 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../const.js';
 
-const MAX_FILMS = 20;
 export default class FilmsModel extends Observable{
   #filmsApiService = null;
   #films = [];
@@ -13,6 +12,11 @@ export default class FilmsModel extends Observable{
   get films() {
 
     return this.#films;
+  }
+
+  get filmsIdComment(){
+    const comments = this.#films.comments;
+    return comments;
   }
 
   init = async () => {
@@ -83,5 +87,3 @@ export default class FilmsModel extends Observable{
   };
 
 }
-
-export {MAX_FILMS};

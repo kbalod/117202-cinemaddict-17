@@ -4,7 +4,7 @@ import { humanizeDueDateFilmCard } from '../utils/utils.js';
 const MAX_DESCRIPTION_LENGTH = 139;
 
 const createCardFilmTemplate = (films) => {
-  const {filmsInfo,comments,userDetails} = films;
+  const {filmsInfo,userDetails} = films;
   const activeIcon = 'film-card__controls-item--active';
   const checkWatchList = userDetails.watchList === true
     ? activeIcon
@@ -29,7 +29,7 @@ const createCardFilmTemplate = (films) => {
     </p>
     <img src="${filmsInfo.poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${createCardDescription()}</p>
-    <span class="film-card__comments">${comments.length} comments</span>
+    <span class="film-card__comments">${films.comments.length} comments</span>
   </a>
   <div class="film-card__controls">
     <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${checkWatchList}" type="button">Add to watchlist</button>
@@ -41,13 +41,15 @@ const createCardFilmTemplate = (films) => {
 
 export default class CardFilmView extends AbstractView {
   #films = null;
-  constructor(films) {
+  #comments = null;
+  constructor(films,comments) {
     super();
     this.#films = films;
+    this.#comments = comments;
   }
 
   get template() {
-    return createCardFilmTemplate(this.#films);
+    return createCardFilmTemplate(this.#films,this.#comments);
   }
 
   setClickHandler = (callback) => {
