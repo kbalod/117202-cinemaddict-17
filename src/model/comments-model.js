@@ -1,5 +1,4 @@
 import Observable from '../framework/observable.js';
-import {UpdateType} from '../const.js';
 import {Error} from '../film-api.js';
 
 export default class CommentsModel extends Observable {
@@ -14,6 +13,7 @@ export default class CommentsModel extends Observable {
   init = async (id) => {
     try {
       this.#comments = await this.#filmApi.getComments(id);
+      return this.#comments;
     } catch(err) {
       this.#comments = [];
     }
@@ -26,7 +26,7 @@ export default class CommentsModel extends Observable {
   deleteComment = async (updateType, update) => {
     const index = this.#comments.findIndex((comment) => comment.id === update);
     if (index === -1) {
-      throw new Error('Can\'t update unexisting comment');
+      throw new Error('Can\'t update unexciting comment');
     }
     try {
       await this.#filmApi.deleteComment(update);

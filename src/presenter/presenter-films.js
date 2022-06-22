@@ -63,10 +63,6 @@ export default class FilmsPresenter {
     this.#filterModel.addObserver(this.#handleFilmEvent);
   };
 
-  #handleModeChange = () => {
-    this.#filmCardPresenter.forEach((presenter) => presenter.resetView());
-  };
-
   #renderLoadMoreButton = () => {
     this.#loadMoreButtonComponent = new ShowMoreButtonView();
     this.#loadMoreButtonComponent.setClickHandler(this.#handleLoadMoreButtonClick);
@@ -77,13 +73,6 @@ export default class FilmsPresenter {
   #renderNoFilms = () => {
     this.#emptyFilms = new EmptyFilmsView(this.#filterType);
     render(this.#emptyFilms,this.#filmListContainerComponent.element, RenderPosition.AFTERBEGIN);
-  };
-
-  #handleOpenPopup = () =>{
-    if (document.body.querySelector('.film-details')) {
-      document.body.querySelector('.film-details').remove();
-      document.querySelector('body').classList.remove('hide-overflow');
-    }
   };
 
   #renderFilmCard (film) {
@@ -111,8 +100,6 @@ export default class FilmsPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(this.#films);
-    console.log(actionType, updateType, update);
     switch(actionType) {
       case UserAction.UPDATE_ELEMENT:
         this.#filmsModel.updateFilm(updateType, update);

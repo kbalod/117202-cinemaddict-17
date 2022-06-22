@@ -209,7 +209,6 @@ export default class PopupFilmView extends AbstractStatefulView {
 
   #switchButton = () => {
     this._restoreHandlers();
-    console.log(this.element.querySelectorAll('.film-details__comment'));
   };
 
   #clickHandler = (evt) => {
@@ -242,19 +241,13 @@ export default class PopupFilmView extends AbstractStatefulView {
 
   #handleDeleteCommentClick = (update) => {
     this.#changeData(UserAction.DELETE_ELEMENT,UpdateType.PATCH,update);
-    //this._state.comments = this._state.comments.filter((item)=> item !== update);
-    //this.changePresenter(UpdateType.PATCH,this._state.comments.filter((item)=> item !== update));
   };
 
   #handleAddComment = async (update) => {
     this.#changeData(UserAction.ADD_ELEMENT,UpdateType.PATCH,update);
-    console.log(this._state.id);
     await this.#comments.init(this._state.id);
-    //await this.#comments.comments.map((element) => element.id);
     this._state.comments = await this.#comments.comments.map((element) => element.id);
     this.updateElement(this._state.comment);
     delete this._state.emotionComment;
-    console.log(await this._state);
-    //this.changePresenter(UserAction.UPDATE_ELEMENT,UpdateType.PATCH,this._state);
   };
 }

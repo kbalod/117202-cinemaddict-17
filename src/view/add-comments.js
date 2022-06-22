@@ -69,7 +69,7 @@ export default class AddCommentView extends AbstractStatefulView {
       }
 
       evt.preventDefault();
-      this._callback.formSubmit(AddCommentView.parseDataToFilm(this.#data));
+      this._callback.formSubmit(AddCommentView.newComment(this.#data));
     }
   };
 
@@ -119,4 +119,9 @@ export default class AddCommentView extends AbstractStatefulView {
 
     return comment;
   };
+
+  static newComment = (state) => ({
+    comment: state.comment,
+    emotion: state.emotion,
+  });
 }

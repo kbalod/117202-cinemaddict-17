@@ -1,9 +1,7 @@
 import PopupFilmView from '../view/popup-view.js';
 import CardFilmView from '../view/card-film.js';
-import { generateComments } from '../fish/data.js';
 import {render,remove, replace} from '../framework/render.js';
 import {UserAction, UpdateType} from '../const.js';
-import {nanoid} from 'nanoid';
 
 const siteFooterElement = document.querySelector('.footer');
 
@@ -17,7 +15,6 @@ export default class FilmCardPresenter {
   #comments = null;
   #changeData = null;
   #filmsModel = null;
-  #curElement = null;
   #filterModel = null;
   #presenterChange = null;
 
@@ -35,7 +32,6 @@ export default class FilmCardPresenter {
 
     const prevFilmComponent = this.#filmCard;
     const prevPopupComponent = this.#filmPopup;
-    this.#curElement = this.#filmsModel.films.find((item)=> item.id === this.#film.id);
     this.#filmCard = new CardFilmView(film,this.#commentsModel);
     this.#filmPopup = new PopupFilmView(film, this.#commentsModel,this.#handleViewAction,this.#presenterChange);
 
@@ -72,13 +68,10 @@ export default class FilmCardPresenter {
   };
 
   #handleViewAction = async (actionType,updateType, update) => {
-    //this.#commentsModel.init(this.#film.id);
     switch(actionType){
       case UserAction.ADD_ELEMENT:
         try{
           await this.#commentsModel.addComment(updateType, update,this.#film.id);
-          this.#removePopup();
-          this.#renderPopup();
         }catch (err){
           throw new Error('Can\'t add comment');
         }
@@ -86,17 +79,11 @@ export default class FilmCardPresenter {
       case UserAction.DELETE_ELEMENT:
         try{
           await this.#commentsModel.deleteComment(updateType, update);
-          this.#removePopup();
-          this.#renderPopup();
         }catch (err){
           throw new Error('Can\'t delete comment');
         }
         break;
     }
-    //this.#commentsModel.init(update);
-    //if (update.deletedCommentId) {await this.#commentsModel.deleteComment(updateType, update);}
-    //if (update.newComment) {await this.#commentsModel.addComment(updateType, update);}
-    //this.#filmsModel.updateFilm(updateType, update);
   };
 
   #handleWatchListClick = () => {
@@ -152,9 +139,6 @@ export default class FilmCardPresenter {
   };
 
   #changeCardClick = async () => {
-//console.log(this.#film);
-//console.log(this.#film);
-    //await this.#changeData(UserAction.UPDATE_ELEMENT,UpdateType.PATCH,this.#film);
   };
 
   #setPopupHandlers = () => {
