@@ -1,31 +1,27 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../const.js';
 
-export default class FilmsModel extends Observable{
+export default class FilmsModel extends Observable {
   #filmsApiService = null;
   #films = [];
+
   constructor(filmsApiService) {
     super();
     this.#filmsApiService = filmsApiService;
   }
 
   get films() {
-
-    return this.#films;
-  }
-
-  get filmsIdComment(){
-    const comments = this.#films.comments;
-    return comments;
+    return [...this.#films];
   }
 
   init = async () => {
     try {
       const films = await this.#filmsApiService.films;
-      this.#films = films.map(this.#adaptToClient);
+      this.#films = films.map(FilmsModel.adaptToClient);
     } catch(err) {
       this.#films = [];
     }
+
     this._notify(UpdateType.INIT);
   };
 
@@ -33,27 +29,26 @@ export default class FilmsModel extends Observable{
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update existing movie');
+      throw new Error('Can\'t update unexisting film');
     }
 
     try {
       const response = await this.#filmsApiService.updateFilm(update);
-      const updatedMovie = this.#adaptToClient(response);
+      const updatedFilm = FilmsModel.adaptToClient(response);
+
       this.#films = [
         ...this.#films.slice(0, index),
-        updatedMovie,
+        updatedFilm,
         ...this.#films.slice(index + 1),
       ];
-      this._notify(updateType, update);
+
+      this._notify(updateType, updatedFilm);
     } catch(err) {
-      Error.CHANGING = true;
-      update = this.films.find((item) => item.id === update.id);
-      this._notify(UpdateType.PATCH, update);
-      throw new Error('Can\'t update movie');
+      throw new Error('Can\'t update film');
     }
   };
 
-  #adaptToClient = (film) => {
+  static adaptToClient = (film) => {
     const filmsInfo = {
       title: film.film_info.title,
       alternativeTitle: film.film_info.alternative_title,

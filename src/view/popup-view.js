@@ -1,253 +1,311 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import he from 'he';
+import {EMOTIONS, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT} from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeDueDatePopup } from '../utils/utils.js';
-import AddCommentView from './add-comments.js';
-import CommentView from './comment.js';
-import {render} from '../render.js';
-import { UpdateType, UserAction } from '../const.js';
 
-const createPopupFilmTemplate = (films, comments) => {
-  const {filmsInfo,userDetails} = films;
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
-  const release = humanizeDueDatePopup(filmsInfo.release.date);
-  const genresNaming = filmsInfo.genre.length > 1 ? 'Genres' : 'Genre';
-  const activeIconButton = 'film-details__control-button--active';
-
-  const checkWatchList = userDetails.watchList === true
-    ? activeIconButton
-    : '';
-
-  const checkAlreadyWatched = userDetails.alreadyWatched === true
-    ? activeIconButton
-    : '';
-
-  const checkFavorite = userDetails.favorite === true
-    ? activeIconButton
-    : '';
+const createFilmDetailsTemplate = (film, comments) => {
+  const {isDisabled} = film;
 
   return (
     `<section class="film-details">
-  <form class="film-details__inner" action="" method="get">
-    <div class="film-details__top-container">
-      <div class="film-details__close">
-        <button class="film-details__close-btn" type="button">close</button>
+<form class="film-details__inner" action="" method="get">
+  <div class="film-details__top-container">
+    <div class="film-details__close">
+      <button class="film-details__close-btn" type="button">close</button>
+    </div>
+    <div class="film-details__info-wrap">
+      <div class="film-details__poster">
+        <img class="film-details__poster-img" src="./${film.filmsInfo.poster}" alt="">
+        <p class="film-details__age">${film.filmsInfo.age_rating}+</p>
       </div>
-      <div class="film-details__info-wrap">
-        <div class="film-details__poster">
-          <img class="film-details__poster-img" src="${filmsInfo.poster}" alt="">
-
-          <p class="film-details__age">${filmsInfo.ageRating}+</p>
-        </div>
-
-        <div class="film-details__info">
-          <div class="film-details__info-head">
-            <div class="film-details__title-wrap">
-              <h3 class="film-details__title">${filmsInfo.title}</h3>
-              <p class="film-details__title-original">Original: ${filmsInfo.alternativeTitle}</p>
-            </div>
-
-            <div class="film-details__rating">
-              <p class="film-details__total-rating">${filmsInfo.totalRating}</p>
-            </div>
+      <div class="film-details__info">
+        <div class="film-details__info-head">
+          <div class="film-details__title-wrap">
+            <h3 class="film-details__title">${film.filmsInfo.title}</h3>
+            <p class="film-details__title-original">${film.filmsInfo.alternativeTitle}</p>
           </div>
-
-          <table class="film-details__table">
-            <tbody><tr class="film-details__row">
-              <td class="film-details__term">Director</td>
-              <td class="film-details__cell">${filmsInfo.director}</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${filmsInfo.writers}</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${filmsInfo.actors}</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${release}</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${filmsInfo.runtime}</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${filmsInfo.release.releaseCountry}</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">${genresNaming}</td>
-              <td class="film-details__cell">
-            ${filmsInfo.genre}
-              </td>
-            </tr>
-          </tbody></table>
-
-          <p class="film-details__film-description">
-            ${filmsInfo.description}
-          </p>
+          <div class="film-details__rating">
+            <p class="film-details__total-rating">${film.filmsInfo.totalRating}</p>
+          </div>
         </div>
+        <table class="film-details__table">
+          <tr class="film-details__row">
+            <td class="film-details__term">Director</td>
+            <td class="film-details__cell">${film.filmsInfo.director}</td>
+          </tr>
+          <tr class="film-details__row">
+            <td class="film-details__term">Writers</td>
+            <td class="film-details__cell">${film.filmsInfo.writers}</td>
+          </tr>
+          <tr class="film-details__row">
+            <td class="film-details__term">Actors</td>
+            <td class="film-details__cell">${film.filmsInfo.actors}</td>
+          </tr>
+          <tr class="film-details__row">
+            <td class="film-details__term">Release Date</td>
+            <td class="film-details__cell">${dayjs(film.filmsInfo.release.date).format('DD MMMM YYYY')}</td>
+          </tr>
+          <tr class="film-details__row">
+            <td class="film-details__term">Runtime</td>
+            <td class="film-details__cell">${dayjs.duration(film.filmsInfo.runtime, 'minutes').format('H[h] m[m]')}</td>
+          </tr>
+          <tr class="film-details__row">
+            <td class="film-details__term">Country</td>
+            <td class="film-details__cell">${film.filmsInfo.release.releaseCountry}</td>
+          </tr>
+          <tr class="film-details__row">
+            <td class="film-details__term">Genres</td>
+            <td class="film-details__cell">
+              <span class="film-details__genre">${film.filmsInfo.genre}</span></td>
+          </tr>
+        </table>
+        <p class="film-details__film-description">${film.filmsInfo.description}</p>
       </div>
-
-      <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${checkWatchList}" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--watched ${checkAlreadyWatched}" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${checkFavorite}" id="favorite" name="favorite">Add to favorites</button>
-      </section>
     </div>
-
-    <div class="film-details__bottom-container">
-      <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.comments.length}</span></h3>
-        <ul class="film-details__comments-list"></ul>
-      </section>
+    <section class="film-details__controls">
+    <button type="button" class="film-details__control-button ${film.userDetails.watchList ? 'film-details__control-button--active' : ''} film-details__control-button--watchlist" id="watchlist" name="watchlist" ${isDisabled ? 'disabled' : ''}>Add to watchlist</button>
+    <button type="button" class="film-details__control-button ${film.userDetails.alreadyWatched ? 'film-details__control-button--active' : ''} film-details__control-button--watched" id="watched" name="watched" ${isDisabled ? 'disabled' : ''}>Already watched</button>
+    <button type="button" class="film-details__control-button ${film.userDetails.favorite ? 'film-details__control-button--active' : ''} film-details__control-button--favorite" id="favorite" name="favorite" ${isDisabled ? 'disabled' : ''}>Add to favorites</button>
+  </section>
+  </div>
+  <div class="film-details__bottom-container">
+    <section class="film-details__comments-wrap">
+      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.comments.length}</span></h3>
+      <ul class="film-details__comments-list">${comments.map((comment) => `<li class="film-details__comment">
+      <span class="film-details__comment-emoji">
+      ${comment.emotion ? `<img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">` : ''}
+      </span>
+          <div>
+            <p class="film-details__comment-text">${`${he.encode(comment.comment)}`}</p>
+            <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${comment.author}</span>
+              <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
+              <button class="film-details__comment-delete" data-button-delete="${comment.id}">Delete</button>
+            </p>
+          </div>
+        </li>`).join('')}
+        </ul>
+        <div class="film-details__new-comment">
+        <div class="film-details__add-emoji-label">${film.commentEmotion ? `<img src="./images/emoji/${film.commentEmotion}.png" width="55" height="55" alt="emoji">` : ''}
+        </div>
+        <label class="film-details__comment-label">
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''}>${film.commentText ? `${he.encode(film.commentText)}` : ''}</textarea>
+        </label>
+        <div class="film-details__emoji-list">
+        ${EMOTIONS.map((el) => (`<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${el}" value="${el}" ${isDisabled ? 'disabled' : ''}>
+        <label class="film-details__emoji-label" for="emoji-${el}">
+          <img src="./images/emoji/${el}.png" width="30" height="30" alt="emoji-${el}">
+        </label>`)).join('')}
+        </div>
     </div>
-  </form>
-</section>`
-  );};
+  </section>
+</div>
+</form>
+</section>`);
+};
 
-export default class PopupFilmView extends AbstractStatefulView {
-  #films = null;
-  #comments = null;
-  #addCommentComponent = null;
-  #container = null;
-  #changeComment = null;
-  #commentsNew = new Map();
+export default class FilmDetailsView extends AbstractStatefulView {
+  _scrollTop = 0;
 
-  constructor(films,comments,changeData,changePresenter) {
+  constructor (film, comments) {
     super();
-    this._state = PopupFilmView.filmsToState(films);
-    this.#comments = comments;
-    this.#addCommentComponent = new AddCommentView();
-    this.#changeData = changeData;
-    this.changePresenter = changePresenter;
+    this._state = FilmDetailsView.parseFilmToState(film);
+    this._comments = comments;
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createPopupFilmTemplate(this._state,this.#comments);
+    return createFilmDetailsTemplate(this._state, this._comments);
   }
 
-  get container () {
-    this.#container = this.element.querySelector('.film-details__comments-list');
-
-    return this.#container;
+  get controls() {
+    return this.element.querySelector('.film-details__controls');
   }
 
-  static filmsToState = (films) => ({...films, 'emotionComment': null});
+  _setStateComments = (updateComments, update) => {
+    this._comments = updateComments;
+    this._state = {...this._state, ...update};
+  };
 
   _restoreHandlers = () => {
-    this.setInnerHandlers();
-    this.setClickButtonCloseHandlerPopup(this._callback.click);
-    this.setClickButtonWatchListHandlerPopup(this._callback.clickButtonPopupWatchList);
-    this.setClickButtonWatchedHandlerPopup(this._callback.clickButtonPopupWatched);
-    this.setClickButtonFavoriteHandlerPopup(this._callback.clickButtonPopupFavorite);
+    this.#setInnerHandlers();
+    this.setCloseClickHandler(this._callback.closeClick);
+    this.setWatchlistPopupClickHandler(this._callback.watchlistPopupClick);
+    this.setWatchedPopupClickHandler(this._callback.watchedPopupClick);
+    this.setFavoritePopupClickHandler(this._callback.favoritePopupClick);
+    this.setAddSubmitHandler(this._callback.addSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+    this.element.scrollTop = this._scrollTop;
   };
 
-  renderCommentInfo = (comments) => {
-    this.#renderComments(comments);
-    this.#renderAddComment();
+  shakeControls(callback) {
+    this.controls.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      this.controls.classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  shakeCommentDelete(callback, block) {
+    block.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      block.classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  resetFormState = () => {
+    this.updateElement({
+      isDisabled: false,
+    });
   };
 
-  #renderComments = (comments = []) => {
-    for (const comment of comments) {
-      const commentComponent = new CommentView(comment);
-      commentComponent.setDeleteClickHandlers(this.#handleDeleteCommentClick);
-      render(commentComponent,this.container);
-      this.#commentsNew.set(comment.id,commentComponent);
+  updateElementByComments = (updateComments, update) => {
+    if (!updateComments) {
+      return;
     }
+    this._setStateComments(updateComments, update);
+    this.#rerenderElementByComments();
   };
 
-  #renderAddComment = () => {
-    this.#addCommentComponent.setFormKeydownHandler(this.#handleAddComment);
-    render(this.#addCommentComponent, this.container);
+  setCloseClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
   };
 
-  setClickButtonCloseHandlerPopup = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
+  setWatchlistPopupClickHandler = (callback) => {
+    this._callback.watchlistPopupClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistPopupClickHandler);
   };
 
-  setClickButtonWatchListHandlerPopup = (callback) => {
-    this._callback.clickButtonPopupWatchList = callback;
-    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#clickHandlerButtonWatchList);
+  setWatchedPopupClickHandler = (callback) => {
+    this._callback.watchedPopupClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedPopupClickHandler);
   };
 
-  setClickButtonWatchedHandlerPopup = (callback) => {
-    this._callback.clickButtonPopupWatched = callback;
-    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#clickHandlerButtonWatched);
+  setFavoritePopupClickHandler = (callback) => {
+    this._callback.favoritePopupClick = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoritePopupClickHandler);
   };
 
-  setClickButtonFavoriteHandlerPopup = (callback) => {
-    this._callback.clickButtonPopupFavorite = callback;
-    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#clickHandlerButtonFavorite);
+  setAddSubmitHandler = (callback) => {
+    this._callback.addSubmit = callback;
+    this.element.addEventListener('keydown', this.#commentAddSubmitHandler);
   };
 
-  setInnerHandlers = () => {
-    if(this.element.querySelector('.film-details__emoji-list')){
-      this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#switchButton);}
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+
+    const deleteButtons = this.element.querySelectorAll('.film-details__comment-delete');
+    deleteButtons.forEach((button) => {
+      button.addEventListener('click', this.#commentDeleteClickHandler);
+    });
   };
 
-  setClickHandler = (callback) => {
-    this._callback.filmCardClick = callback;
-    this.element.querySelector('.film-details__bottom-container').addEventListener('click', this.#clickHandlerFilm);
-  };
+  #rerenderElementByComments = () => {
+    const prevElement = this.element;
+    const parent = prevElement.parentElement;
+    this.removeElement();
+    this._setState({
+      commentText: '',
+      commentEmotion: '',
+      isDisabled: false
+    });
+    const newElement = this.element;
+    parent.replaceChild(newElement, prevElement);
 
-  setDeleteButtonClick = (callback) => {
-    this._callback.clickDeleteButton = callback;
-    if(this.element.querySelector('.film-details__comment-delete')){
-      this.element.querySelectorAll('.film-details__comment-delete').forEach((item)=> item.addEventListener('click', this.#onDeleteButtonClick));}
-  };
-
-  #onDeleteButtonClick = (evt) => {
-    evt.preventDefault();
-    this._callback.clickDeleteButton();
-  };
-
-  #changeData = () => {
-
-  };
-
-  #switchButton = () => {
     this._restoreHandlers();
   };
 
-  #clickHandler = (evt) => {
+  #closeClickHandler = () => {
+    this._callback.closeClick();
+  };
+
+  #watchlistPopupClickHandler = () => {
+    this._scrollTop = this.element.scrollTop;
+    this._callback.watchlistPopupClick(this._state);
+  };
+
+  #watchedPopupClickHandler = () => {
+    this._scrollTop = this.element.scrollTop;
+    this._callback.watchedPopupClick(this._state);
+  };
+
+  #favoritePopupClickHandler = () => {
+    this._scrollTop = this.element.scrollTop;
+    this._callback.favoritePopupClick(this._state);
+  };
+
+  #emotionChangeHandler = (evt) => {
+    this._scrollTop = this.element.scrollTop;
+    this.updateElement({
+      commentEmotion: evt.target.value,
+    });
+  };
+
+  #commentInputHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._scrollTop = this.element.scrollTop;
+    this._setState({
+      commentText: evt.target.value,
+    });
   };
 
-  #clickHandlerFilm = (evt) => {
+  #commentAddSubmitHandler = (evt) => {
+    if ((evt.metaKey || evt.ctrlKey) && evt.key === 'Enter' && this._state.commentEmotion && this._state.commentText) {
+      evt.preventDefault();
+      this._scrollTop = this.element.scrollTop;
+      this._setState({
+        isDisabled: true,
+      });
+      this.element.removeEventListener('keydown', this.#commentAddSubmitHandler);
+      this._callback.addSubmit(FilmDetailsView.parseStateToFilm(this._state), FilmDetailsView.newComment(this._state));
+    }
+  };
+
+  #commentDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    //this._callback.filmCardClick();
+    const idDelete = evt.target.dataset.buttonDelete;
+    const target = evt.target;
+    this._scrollTop = this.element.scrollTop;
+    this._setState({
+      isDisabled: true,
+    });
+    this._callback.deleteClick(FilmDetailsView.parseStateToFilm(this._state), idDelete, target, this._comments);
   };
 
-  #clickHandlerButtonWatchList = (evt) => {
-    evt.preventDefault();
-    this._callback.clickButtonPopupWatchList();
-    evt.target.classList.toggle('film-details__control-button--active');
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emotionChangeHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   };
 
-  #clickHandlerButtonWatched = (evt) => {
-    evt.preventDefault();
-    this._callback.clickButtonPopupWatched();
-    evt.target.classList.toggle('film-details__control-button--active');
+  static parseFilmToState = (film) => (
+    {...film,
+      commentText: '',
+      commentEmotion: '',
+      isDisabled: false,
+    }
+  );
+
+  static parseStateToFilm = (state) => {
+    const film = {
+      ...state
+    };
+
+    delete film.commentText;
+    delete film.commentEmotion;
+    delete film.isDisabled;
+
+    return film;
   };
 
-  #clickHandlerButtonFavorite = (evt) => {
-    evt.preventDefault();
-    this._callback.clickButtonPopupFavorite();
-    evt.target.classList.toggle('film-details__control-button--active');
-  };
-
-  #handleDeleteCommentClick = (update) => {
-    this.#changeData(UserAction.DELETE_ELEMENT,UpdateType.PATCH,update);
-  };
-
-  #handleAddComment = async (update) => {
-    this.#changeData(UserAction.ADD_ELEMENT,UpdateType.PATCH,update);
-    await this.#comments.init(this._state.id);
-    this._state.comments = await this.#comments.comments.map((element) => element.id);
-    this.updateElement(this._state.comment);
-    delete this._state.emotionComment;
-  };
+  static newComment = (state) => ({
+    comment: state.commentText,
+    emotion: state.commentEmotion,
+  });
 }
