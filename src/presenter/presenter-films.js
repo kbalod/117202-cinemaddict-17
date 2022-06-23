@@ -188,6 +188,7 @@ export default class FilmsPresenter {
 
 
   #renderFilmsContainer = () =>{
+    const filmCount = this.films.length;
     render(this.#filmListContainerComponent, siteMainElement);
 
     if (this.#isLoading) {
@@ -195,8 +196,6 @@ export default class FilmsPresenter {
       return;
     }
 
-    const films = this.films;
-    const filmCount = films.length;
 
     if (filmCount === 0){
       this.#renderNoFilms();
@@ -205,7 +204,7 @@ export default class FilmsPresenter {
     this.#renderSort();
 
 
-    this.#renderFilms(films.slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP)));
+    this.#renderFilms(this.films.slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP)));
     this.#renderRungUser();
     if (filmCount > this.#renderedFilmCount) {
       this.#renderLoadMoreButton();
@@ -305,6 +304,7 @@ export default class FilmsPresenter {
       await this.#filmsModel.updateFilm(UpdateType.MINOR, {...film});
       this.#filmDetailsComponent.updateElementByComments(newComments, {comments: film.comments});
     } catch(err) {
+      //console.log(this.#filmDetailsComponent);
       this.#filmCardPresenter.get(film.id).setAddAborting(this.#filmDetailsComponent);
     }
 

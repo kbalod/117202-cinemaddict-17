@@ -127,6 +127,10 @@ export default class FilmDetailsView extends AbstractStatefulView {
     return this.element.querySelector('.film-details__controls');
   }
 
+  get form() {
+    return this.element.querySelector('.film-details__new-comment');
+  }
+
   _setStateComments = (updateComments, update) => {
     this._comments = updateComments;
     this._state = {...this._state, ...update};
@@ -147,6 +151,14 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.controls.classList.add(SHAKE_CLASS_NAME);
     setTimeout(() => {
       this.controls.classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  shake(callback) {
+    this.form.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      this.form.classList.remove(SHAKE_CLASS_NAME);
       callback?.();
     }, SHAKE_ANIMATION_TIMEOUT);
   }
