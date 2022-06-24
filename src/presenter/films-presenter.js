@@ -15,8 +15,6 @@ import {sortByDate,sortByRating,filter} from '../utils/utils.js';
 
 const siteBodyElement = document.querySelector('body');
 const siteHeaderElement = document.querySelector('.header');
-const mainElement = document.querySelector('.main');
-
 
 const FILM_COUNT_PER_STEP = 5;
 
