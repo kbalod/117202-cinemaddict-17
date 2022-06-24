@@ -37,7 +37,7 @@ export const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
-export const profileRating = {
+export const ProfileRating = {
   MOVIE_BUFF: 21,
   FAN: 11,
 };

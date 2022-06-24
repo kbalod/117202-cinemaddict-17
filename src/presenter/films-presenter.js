@@ -1,11 +1,11 @@
-import FilmListView from '../view/films-list.js';
-import FilmDetailsView from '../view/popup-view.js';
-import ShowMoreButtonView from '../view/show-more-button.js';
-import LoadingView from '../view/loading.js';
-import EmptyFilmsView from '../view/empty.js';
-import FilmCardPresenter from './card-film.js';
-import SortFilterView from '../view/filters-menu-sort.js';
-import RangUserView from '../view/rang-user.js';
+import FilmListView from '../view/films-list-view.js';
+import FilmDetailsView from '../view/film-details-view.js';
+import ShowMoreButtonView from '../view/show-more-button-view.js';
+import LoadingView from '../view/loading-view.js';
+import EmptyFilmsView from '../view/empty-film-view.js';
+import FilmCardPresenter from './film-card-presenter.js';
+import SortFilterView from '../view/sort-filter-view.js';
+import RangUserView from '../view/rang-user-view.js';
 
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { SortType, UpdateType, TimeLimit,FilterType} from '../const.js';
@@ -15,14 +15,12 @@ import {sortByDate,sortByRating,filter} from '../utils/utils.js';
 
 const siteBodyElement = document.querySelector('body');
 const siteHeaderElement = document.querySelector('.header');
-const siteFooterElement = document.querySelector('.footer');
+
 
 const FILM_COUNT_PER_STEP = 5;
 
 export default class FilmsPresenter {
-  #filmContainer = null;
   #filmsModel = null;
-  #films = null;
   #filmsContainer = null;
   #emptyFilms= null;
   #filmDetailsComponent = null;
@@ -162,7 +160,7 @@ export default class FilmsPresenter {
     this.#sortComponent = new SortFilterView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
 
-    render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#filmListContainerComponent.element, RenderPosition.AFTERBEGIN);
   };
 
   #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
@@ -315,7 +313,7 @@ export default class FilmsPresenter {
   #handleCommentDeleteHandler = async (film, id, target, comments) => {
     this.#uiBlocker.block();
 
-    target.setAttribute('disabled', 'disabled');
+    target.disabled = true;
     target.textContent = 'Deleting...';
     const newComments = comments.filter((comment) => comment.id !== id);
 
@@ -325,7 +323,7 @@ export default class FilmsPresenter {
       this.#filmDetailsComponent.updateElementByComments(newComments, {comments: film.comments});
     } catch(err) {
       target.textContent = 'Delete';
-      target.removeAttribute('disabled', 'disabled');
+      target.disabled = false;
       this.#filmCardPresenter.get(film.id).setDeleteAborting(this.#filmDetailsComponent, target);
     }
 

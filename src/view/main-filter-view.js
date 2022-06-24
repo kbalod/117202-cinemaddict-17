@@ -39,6 +39,9 @@ export default class MainFilterView extends AbstractView {
   };
 
   #filterTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.dataset.sortType);
   };
