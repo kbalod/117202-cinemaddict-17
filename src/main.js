@@ -19,12 +19,13 @@ const siteFooterElement = document.querySelector('.footer');
 const filmsModel = new FilmsModel(new FilmsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 const commentsModel = new CommentsModel(new CommentsApiService(END_POINT, AUTHORIZATION));
-
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement,filterModel,filmsModel,commentsModel);
 
+
 filterPresenter.init();
 filmsPresenter.init();
+
 filmsModel.init()
   .finally(() => {
     render(new FooterView(filmsModel.films),siteFooterElement);

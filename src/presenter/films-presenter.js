@@ -15,6 +15,7 @@ import {sortByDate,sortByRating,filter} from '../utils/utils.js';
 
 const siteBodyElement = document.querySelector('body');
 const siteHeaderElement = document.querySelector('.header');
+const mainElement = document.querySelector('.main');
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -77,12 +78,12 @@ export default class FilmsPresenter {
     this.#loadMoreButtonComponent = new ShowMoreButtonView();
     this.#loadMoreButtonComponent.setClickHandler(this.#handleLoadMoreButtonClick);
 
-    render(this.#loadMoreButtonComponent, this.#filmListContainerComponent.element);
+    render(this.#loadMoreButtonComponent, this.#filmListContainerComponent.element,RenderPosition.BEFOREEND);
   };
 
   #renderNoFilms = () => {
     this.#emptyFilms = new EmptyFilmsView(this.#filterType);
-    render(this.#emptyFilms,this.#filmListContainerComponent.mainListElement, RenderPosition.AFTERBEGIN);
+    render(this.#emptyFilms,this.#filmListContainerComponent.mainListElement, RenderPosition.BEFOREEND);
   };
 
   #renderFilmCard (film) {
@@ -138,6 +139,7 @@ export default class FilmsPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#clearBoard();
         this.#renderFilmsContainer();
         break;
     }
@@ -153,14 +155,14 @@ export default class FilmsPresenter {
   };
 
   #renderLoading = () => {
-    render(this.#loadingComponent, this.#filmListContainerComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#loadingComponent, this.#filmListContainerComponent.element, RenderPosition.BEFOREEND);
   };
 
   #renderSort = () => {
     this.#sortComponent = new SortFilterView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
 
-    render(this.#sortComponent, this.#filmListContainerComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#filmsContainer, RenderPosition.BEFOREEND);
   };
 
   #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
@@ -191,7 +193,7 @@ export default class FilmsPresenter {
 
   #renderFilmsContainer = () =>{
     const filmCount = this.films.length;
-    render(this.#filmListContainerComponent, this.#filmsContainer);
+
 
     if (this.#isLoading) {
       this.#renderLoading();
@@ -203,7 +205,7 @@ export default class FilmsPresenter {
       return;
     }
     this.#renderSort();
-
+    render(this.#filmListContainerComponent, this.#filmsContainer);
     this.#renderFilms(this.films.slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP)));
     this.#renderRungUser();
     if (filmCount > this.#renderedFilmCount) {

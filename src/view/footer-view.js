@@ -2,9 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 
 const createFooterTemplate = (count) => (
-  `
-
-  <section class="footer__statistics">
+  `<section class="footer__statistics">
     <p>${count} movies inside</p>
   </section>
 </footer>`
