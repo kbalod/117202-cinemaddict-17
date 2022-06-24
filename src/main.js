@@ -23,8 +23,9 @@ const commentsModel = new CommentsModel(new CommentsApiService(END_POINT, AUTHOR
 const filmsPresenter = new FilmsPresenter(siteMainElement,filterModel,filmsModel,commentsModel);
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 
-filterPresenter.init();
+
 filmsPresenter.init();
+filterPresenter.init();
 filmsModel.init()
   .finally(() => {
     render(new FooterView(filmsModel.films),siteFooterElement);

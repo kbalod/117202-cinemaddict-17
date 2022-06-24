@@ -1,42 +1,11 @@
 import dayjs from 'dayjs';
-import {MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH, DESCRIPTION_SLICE_LENGTH} from '../const';
+import {MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH, DESCRIPTION_SLICE_LENGTH,FilterType,profileRating} from '../const';
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
 
   return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-const humanizeDueDateComment = (dueDate) => dayjs(dueDate).format('YYYY/M/D HH:mm');
-const humanizeDueDatePopup = (dueDate) => dayjs(dueDate).format('DD MMMM YYYY');
-const humanizeDueDateFilmCard = (dueDate) => dayjs(dueDate).format('YYYY');
-
-function formatMinutesHour(value) {
-  let minuteTime = parseInt(value, 10);
-  let hourTime = 0;
-  if(minuteTime > 60) {
-    hourTime = parseInt(minuteTime / 60, 10);
-    minuteTime = parseInt(minuteTime % 60, 10);
-  }
-  let result = `${parseInt(minuteTime, 10)}m`;
-  if(hourTime > 0) {
-    result = `${parseInt(hourTime, 10)}h${result}`;
-  }
-  return result;
-}
-
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
 };
 
 const more = (a, b) => {
@@ -59,10 +28,6 @@ const sortByDate = (taskA, taskB) => {
   return dayjs(b).diff(dayjs(a));
 };
 
-const profileRating = {
-  MOVIE_BUFF: 21,
-  FAN: 11,
-};
 export const getProfileRating = (item) => {
   if (item >= profileRating.MOVIE_BUFF) {
     return 'Movie Buff';
@@ -73,5 +38,11 @@ export const getProfileRating = (item) => {
   }
   return '';
 };
+export const filter = {
+  [FilterType.ALL]: (films) => films.filter(({userDetails}) => userDetails),
+  [FilterType.WATCH_LIST]: (films) => films.filter(({userDetails}) => !!userDetails.watchList),
+  [FilterType.ALREADY_WATCHED]: (films) => films.filter(({userDetails}) => !!userDetails.alreadyWatched),
+  [FilterType.FAVORITE]: (films) => films.filter(({userDetails}) =>!!userDetails.favorite),
+};
 
-export {getRandomInteger,humanizeDueDateComment,formatMinutesHour,humanizeDueDatePopup,humanizeDueDateFilmCard,updateItem,sortByDate,sortByRating};
+export {getRandomInteger,sortByDate,sortByRating};
