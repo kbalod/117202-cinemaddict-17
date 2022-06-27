@@ -3,11 +3,11 @@ import {MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH, DESCRIPTION_SLICE_LENGTH
 
 export const formatDescription = (description) => description.length > MAX_DESCRIPTION_LENGTH ? `${description.slice(MIN_DESCRIPTION_LENGTH, DESCRIPTION_SLICE_LENGTH)}...` : description;
 
-const more = (a,b) => (a < b) ? 1 : -1;
+const getMore = (a,b) => (a < b) ? 1 : -1;
 export const sortByRating = (taskA, taskB) => {
   const a = taskA.filmsInfo.totalRating;
   const b = taskB.filmsInfo.totalRating;
-  return more(a,b);
+  return getMore(a,b);
 };
 export const sortByDate = (taskA, taskB) => {
   const a = taskA.filmsInfo.release.date;

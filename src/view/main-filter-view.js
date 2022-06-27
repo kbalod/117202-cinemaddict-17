@@ -39,10 +39,13 @@ export default class MainFilterView extends AbstractView {
   };
 
   #filterTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'A') {
-      return;
+    if (evt.target.tagName === 'SPAN') {
+      this.element.querySelector('.main-navigation__item--active').classList.remove('main-navigation__item--active');
+      evt.target.parentNode.classList.add('main-navigation__item--active');
+      this._callback.filterTypeChange(evt.target.parentNode.dataset.sortType);}
+    if (evt.target.tagName === 'A' ) {
+      evt.preventDefault();
+      this._callback.filterTypeChange(evt.target.dataset.sortType);
     }
-    evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.sortType);
   };
 }

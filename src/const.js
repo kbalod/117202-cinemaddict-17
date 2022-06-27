@@ -19,12 +19,6 @@ const SortType = {
   SORT_BY_RATING: 'sort-by-rating',
 };
 
-const UserAction = {
-  UPDATE_ELEMENT: 'UPDATE_ELEMENT',
-  ADD_ELEMENT: 'ADD_ELEMENT',
-  DELETE_ELEMENT: 'DELETE_ELEMENT',
-};
-
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
@@ -42,5 +36,5 @@ export const ProfileRating = {
   FAN: 11,
 };
 
-export {FilterType,SortType,UserAction,UpdateType};
+export {FilterType,SortType,UpdateType};
 

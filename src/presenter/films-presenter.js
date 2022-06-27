@@ -1,4 +1,4 @@
-import FilmListView from '../view/films-list-view.js';
+import FilmListView from '../view/film-list-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import LoadingView from '../view/loading-view.js';
